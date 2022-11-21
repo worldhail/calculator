@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header>
+        <h1 class="title">Simple Calculator</h1>
+        <p class="description">made by <em>Jeric</em></p>
+    </header>
+    <main>
+        <div class="container">
+            <div class="screen-display">
+                <input class='input-value' type="text" value='0' readonly />
+                <input class='to-be-equalled' type='text' readonly />
+            </div>
+            <div class="white-btn">
+                <div class="with-reset-btn">
+                    <button class="reset"><span class="ac">A</span><span class="ac">C</span></button>
+                    <button class="plus-minus-sign">+/-</button>
+                    <button class="percent">%</button>
+                </div>
+                <div class="numbers">
+                    <button class="seven">7</button>
+                    <button class="eight">8</button>
+                    <button class="nine">9</button>
+                    <button class="four">4</button>
+                    <button class="five">5</button>
+                    <button class="six">6</button>
+                    <button class="one">1</button>
+                    <button class="two">2</button>
+                    <button class="three">3</button>
+                    <button class="zero">0</button>
+                    <button class="decimal">.</button>
+                    <button class="del">Del</button>
+                </div>
+            </div>
+            <div class="operators">
+                <button class="division" id="operator">÷</button>
+                <button class="multiplication" id="operator">x</button>
+                <button class="subtraction" id="operator">-</button>
+                <button class="addition" id="operator">+</button>
+                <button class="equal" id="operator">=</button>
+            </div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+
+</html>

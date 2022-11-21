@@ -1,0 +1,142 @@
+:root {
+    --flex: flex;
+    --border-radius: 5px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+}
+
+header {
+    text-align: center;
+    margin: 50px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande';
+}
+
+.description {
+    color: rgb(101, 100, 100);
+    margin-top: 5px;
+}
+
+main {
+    min-width: 300px;
+    display: var(--flex);
+    justify-content: center;
+}
+
+.container {
+    display: var(--flex);
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 284px;
+    background-color: black;
+    border-radius: var(--border-radius);
+    padding: 1px;
+}
+
+button {
+    width: 70px;
+    height: 70px;
+    padding: 5px;
+    font-size: 1.5rem;
+    border: 2px solid black;
+    border-radius: var(--border-radius);
+}
+
+button:hover {
+    background-color: lightgrey;
+}
+
+button:active {
+    border: 1px solid white;
+}
+
+#operator:hover {
+    background-color: rgb(242, 73, 73);
+}
+
+/*screen display*/
+
+.screen-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100px;
+    order: 1;
+    padding-bottom: 2px;
+}
+
+input {
+    font-family: Arial, Helvetica, sans-serif;
+    border: none;
+    outline: none;
+}
+
+.input-value {
+    padding: 10px;
+    font-size: 2.5rem;
+    width: 98%;
+    height: 63%;
+    color: white;
+    text-align: end;
+    background-color: rgb(71, 71, 71);
+    border-radius: 5px 5px 0 0;
+    margin-bottom: 4px;
+}
+
+.to-be-equalled {
+    color: rgb(188, 187, 187);
+    display: var(--flex);
+    width: 98%;
+    height: 29%;
+    text-align: center;
+    background-color: black;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    border: 1px solid rgb(69, 69, 69);
+    border-radius: 10px;
+}
+
+
+/*white buttons*/
+
+.white-btn {
+    width: 210px;
+    order: 2;
+}
+
+.with-reset-btn {
+    display: var(--flex);
+}
+
+.reset {
+    color: rgb(223, 82, 82);
+}
+
+.numbers {
+    display: var(--flex);
+    flex-wrap: wrap;
+}
+
+/*operators on the right side*/
+
+.operators {
+    display: var(--flex);
+    flex-direction: column;
+    order: 3;
+}
+
+#operator {
+    background-color: rgb(249, 114, 114);
+    color: white;
+}
+
