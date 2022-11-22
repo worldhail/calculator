@@ -60,7 +60,9 @@ window.addEventListener('keypress', function (event) {
             forDisplay.unshift(pressedKey);
         }
         unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
-        const forDisplaywithRegularMinusSign = forDisplay.join('').replace(/[\–]/g, '-');
+        const forDisplaywithRegularMinusSign = forDisplay
+            .join('')
+            .replace(/[\–]/g, '-');
         calculatorScreen.value = forDisplaywithRegularMinusSign;
     }
 
@@ -95,7 +97,9 @@ function display(number) {
 
 //CALCULATE FUNCTION
 function calculate(unFinishedTotalArray) {
-    const combinedPressedKeys = unFinishedTotalArray.join('');
+    const combinedPressedKeys = unFinishedTotalArray
+        .join('')
+        .replace(/[\–]/g, '-');
     const getToTal = eval(combinedPressedKeys);
     return getToTal;
 }
