@@ -3,7 +3,6 @@
 const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
 const operator = /[\+]|[\-]|[\*]|[\/]/;
-//const negativeSign = 
 const unFinishedTotal = [''];
 let lastUsedOperator = '';
 let forDisplay = [];
@@ -30,6 +29,33 @@ window.addEventListener('keypress', function (event) {
         }
         unFinishedTotal.push(pressedKey);
         lastUsedOperator = pressedKey;
+
+    } else if (event.altKey === true && event.code === 'Minus') {
+        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
+        if (forDisplay.length === 0) { return; }
+        if (lastUsedOperator === '') {
+            if (forDisplay[0] === '–') {
+                unFinishedTotal.shift();
+                forDisplay.shift();
+            }
+            unFinishedTotal.unshift(pressedKey);
+            forDisplay.unshift(pressedKey);
+        } else {
+            const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
+            if (forDisplay[0] === '–') {
+                forDisplay.shift();
+                unFinishedTotalLastNumber.shift();
+                unFinishedTotalLastNumber.pop();
+                unFinishedTotal.push(unFinishedTotalLastNumber);
+                calculatorScreen.value = forDisplay.join('');
+            } else {
+            forDisplay.unshift(pressedKey);
+            unFinishedTotalLastNumber.unshift('(-');
+            unFinishedTotalLastNumber.push(')');
+            unFinishedTotal.push(unFinishedTotalLastNumber);
+            }
+        }
+        calculatorScreen.value = forDisplay.join('');
     }
 
     const starAndSlash = { '*': 'x', '/': '÷' };
@@ -55,7 +81,6 @@ function display(number) {
             unFinishedTotal.pop();
         }
     }
-
     unFinishedTotal.push(number);
     forDisplay.push(number);
     const joinedNumbers = forDisplay.join('');
