@@ -1,4 +1,5 @@
-//Note: I use guard clauses on some of the if else statement for oneliner code
+/*Note: I use guard clauses on some of the if else statement for oneliner code
+that needs to run down before the nested if else statement ends*/
 
 const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
@@ -13,6 +14,7 @@ window.addEventListener('keypress', function (event) {
     const pressedKey = event.key;
     const unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
+     //decimal is added on this condition
     if (number.test(pressedKey)) {
         if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
@@ -30,6 +32,7 @@ window.addEventListener('keypress', function (event) {
         unFinishedTotal.push(pressedKey);
         lastUsedOperator = pressedKey;
 
+    //for numbers that needed a negative sign
     } else if (event.altKey === true && event.code === 'Minus') {
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         if (forDisplay.length === 0) { return; }
