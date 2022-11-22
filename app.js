@@ -11,19 +11,22 @@ let forDisplay = [];
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', function (event) {
     const number = /[\d]|[\.]/;
-    const pressedKey = event.key;
+    let pressedKey = event.key;
     const unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
-     //decimal is added on this condition
+    //decimal is added on this condition
     if (number.test(pressedKey)) {
         if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
         display(pressedKey);
 
+    //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
-        if (unFinishedTotalLastElement.match(operator)) { unFinishedTotal.pop() }
-        if (forDisplay.length === 0) { return; }
-        else {
+        if (unFinishedTotalLastElement.match(operator)) {
+            unFinishedTotal.pop();
+        } else if (forDisplay.length === 0) {
+            return;
+        } else if (lastUsedOperator !== '') {
             const total = calculate(unFinishedTotal);
             forDisplay = [];
             display(total);
@@ -32,7 +35,7 @@ window.addEventListener('keypress', function (event) {
         unFinishedTotal.push(pressedKey);
         lastUsedOperator = pressedKey;
 
-    //for numbers that needed a negative sign
+        //for numbers that needed a negative sign
     } else if (event.altKey === true && event.code === 'Minus') {
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         if (forDisplay.length === 0) { return; }
@@ -40,9 +43,10 @@ window.addEventListener('keypress', function (event) {
             if (forDisplay[0] === '–') {
                 unFinishedTotal.shift();
                 forDisplay.shift();
+            } else {
+                unFinishedTotal.unshift(pressedKey);
+                forDisplay.unshift(pressedKey);
             }
-            unFinishedTotal.unshift(pressedKey);
-            forDisplay.unshift(pressedKey);
         } else {
             const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
             if (forDisplay[0] === '–') {
@@ -52,13 +56,14 @@ window.addEventListener('keypress', function (event) {
                 unFinishedTotal.push(unFinishedTotalLastNumber);
                 calculatorScreen.value = forDisplay.join('');
             } else {
-            forDisplay.unshift(pressedKey);
-            unFinishedTotalLastNumber.unshift('(-');
-            unFinishedTotalLastNumber.push(')');
-            unFinishedTotal.push(unFinishedTotalLastNumber);
+                forDisplay.unshift(pressedKey);
+                unFinishedTotalLastNumber.unshift('(-');
+                unFinishedTotalLastNumber.push(')');
+                unFinishedTotal.push(unFinishedTotalLastNumber);
             }
         }
-        calculatorScreen.value = forDisplay.join('');
+        const forDisplaywithRegularMinusSign = forDisplay.join('').replace(/[\–]/g, '-');
+        calculatorScreen.value = forDisplaywithRegularMinusSign;
     }
 
     const starAndSlash = { '*': 'x', '/': '÷' };
