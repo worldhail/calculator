@@ -66,11 +66,11 @@ window.addEventListener('keypress', function (event) {
         calculatorScreen.value = forDisplaywithRegularMinusSign;
     }
 
-    const starAndSlash = { '*': 'x', '/': '÷' };
+    const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
     const pressedKeys = unFinishedTotal
         .join('')
         .replace(/[\*]|[\/]/g, (values) => {
-            return starAndSlash[values]
+            return operatorOutput[values]
         });
     toBeEqualledScreen.value = pressedKeys;
 });
