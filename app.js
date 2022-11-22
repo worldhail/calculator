@@ -39,7 +39,15 @@ window.addEventListener('keypress', function (event) {
     } else if (event.altKey === true && event.code === 'Minus') {
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
+        const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
         if (forDisplay.length === 0) { return; }
+        
+        //unFinishedTotal array will reset once apply a negative sign on a current result
+        if (numberOfUsedOperator > 1 && unFinishedTotalLastElement.match(operator)) {
+            const currentResult = forDisplay.toString().replace('-', '–').split('');
+            forDisplay = currentResult;
+            unFinishedTotal = ['', currentResult];
+        }
         if (forDisplay[0] === '–') {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
                 unFinishedTotal.shift();
@@ -48,14 +56,12 @@ window.addEventListener('keypress', function (event) {
                 unFinishedTotalLastNumber.pop();
             }
             forDisplay.shift();
-            //unFinishedTotal.push(unFinishedTotalLastNumber);
         } else {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
                 unFinishedTotal.unshift(pressedKey);
             } else {
-                unFinishedTotalLastNumber.unshift('(-');
+                unFinishedTotalLastNumber.unshift('(–');
                 unFinishedTotalLastNumber.push(')');
-                //unFinishedTotal.push(unFinishedTotalLastNumber);
             }
             forDisplay.unshift(pressedKey);
         }
