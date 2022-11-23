@@ -37,16 +37,16 @@ window.addEventListener('keypress', function (event) {
 
         //for numbers that needed a negative sign
     } else if (event.altKey === true && event.code === 'Minus') {
+        if (forDisplay.length === 0) { return; }
+
+        //unFinishedTotal array will reset once apply a negative sign on a current result
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
         const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
-        if (forDisplay.length === 0) { return; }
-        
-        //unFinishedTotal array will reset once apply a negative sign on a current result
         if (numberOfUsedOperator > 1 && unFinishedTotalLastElement.match(operator)) {
             const currentResult = forDisplay.toString().replace('-', '–').split('');
             forDisplay = currentResult;
-            unFinishedTotal = ['', currentResult];
+            unFinishedTotal = currentResult.concat('');
         }
         if (forDisplay[0] === '–') {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
