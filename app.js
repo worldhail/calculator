@@ -66,10 +66,8 @@ window.addEventListener('keypress', function (event) {
             forDisplay.unshift(pressedKey);
         }
         unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
-        const forDisplaywithRegularMinusSign = forDisplay
-            .join('')
-            .replace(/[\–]/g, '-');
-        calculatorScreen.value = forDisplaywithRegularMinusSign;
+        const changedAltMinus = useRegularMinusSign(forDisplay);
+        calculatorScreen.value = changedAltMinus;
     }
 
     const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
@@ -97,15 +95,21 @@ function display(number) {
     }
     unFinishedTotal.push(number);
     forDisplay.push(number);
-    const joinedNumbers = forDisplay.join('');
-    calculatorScreen.value = joinedNumbers;
+    const changedNegativeSign = useRegularMinusSign(forDisplay);
+    calculatorScreen.value = changedNegativeSign;
 }
 
 //CALCULATE FUNCTION
 function calculate(unFinishedTotalArray) {
-    const combinedPressedKeys = unFinishedTotalArray
+    const validInputs = useRegularMinusSign(unFinishedTotalArray);
+    const getToTal = eval(validInputs);
+    return getToTal;
+}
+
+//REPLACE ALT-MINUS WITH REGULAR MINUS FUNCTION
+function useRegularMinusSign(toDisplay) {
+    const combinedPressedKeys = toDisplay
         .join('')
         .replace(/[\–]/g, '-');
-    const getToTal = eval(combinedPressedKeys);
-    return getToTal;
+    return combinedPressedKeys;
 }
