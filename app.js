@@ -18,6 +18,11 @@ window.addEventListener('keypress', function (event) {
     if (number.test(pressedKey)) {
         if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
+        if (unFinishedTotalLastElement === ')') {
+            unFinishedTotal.pop();
+            unFinishedTotal.push(pressedKey);
+            pressedKey = ')';
+        }
         display(pressedKey);
 
         //operator keys will run inside this condition
@@ -94,6 +99,7 @@ function display(number) {
         }
     }
     unFinishedTotal.push(number);
+    if (number === ')') { number = unFinishedTotal.slice(-2, -1)[0]; }
     forDisplay.push(number);
     const changedNegativeSign = useRegularMinusSign(forDisplay);
     calculatorScreen.value = changedNegativeSign;
