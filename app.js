@@ -52,9 +52,9 @@ window.addEventListener('keypress', function (event) {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
                 unFinishedTotal.shift();
             } else {
-                unFinishedTotalLastNumber.shift();
                 unFinishedTotalLastNumber.pop();
             }
+            unFinishedTotalLastNumber.shift();
             forDisplay.shift();
         } else {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
