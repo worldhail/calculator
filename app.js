@@ -73,6 +73,41 @@ window.addEventListener('keypress', function (event) {
         unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
         const changedAltMinus = useRegularMinusSign(forDisplay);
         calculatorScreen.value = changedAltMinus;
+
+        //percentage condition
+    } else if (pressedKey === '%') {
+        const currentNumber = calculatorScreen.value * 1;
+        let percentageOf = currentNumber / 100;
+        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
+        
+        if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
+            forDisplay = [];
+            display(percentageOf);
+            unFinishedTotal = ['', '% of ', currentNumber];
+        } else {
+            const previousSet = unFinishedTotal.slice(0, unFinishedTotalLastOperatorIndex).join('');
+            const previousResult = eval(previousSet);
+            if (percentageOf < 0) { percentageOf = `(${percentageOf})`;}
+            if (unFinishedTotalLastElement === ')') {
+                unFinishedTotal.pop();
+                unFinishedTotal.push(pressedKey);
+                pressedKey = ')';
+            }
+
+            let newResult = eval(`${percentageOf} * ${previousResult}`);
+            if (lastUsedOperator === '+') {
+                newResult = previousResult + newResult;
+            } else if (lastUsedOperator === '-') {
+                newResult = previousResult - newResult;
+            } else if (lastUsedOperator === '/') {
+                newResult = previousResult / percentageOf;
+            }
+            unFinishedTotal.push(pressedKey);
+            const split = newResult.toString().replace('-', '–').split('');
+            forDisplay = split;
+            const changedNegativeSign = useRegularMinusSign(forDisplay);
+            calculatorScreen.value = changedNegativeSign;
+        }
     }
 
     const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
