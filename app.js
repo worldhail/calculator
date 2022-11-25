@@ -85,9 +85,12 @@ window.addEventListener('keypress', function (event) {
             display(percentageOf);
             unFinishedTotal = ['', '% of ', currentNumber];
         } else {
-            const previousSet = unFinishedTotal.slice(0, unFinishedTotalLastOperatorIndex).join('');
+            const previousSet = unFinishedTotal
+                .slice(0, unFinishedTotalLastOperatorIndex)
+                .join('')
+                .replace(/[\–]/, '-');
             const previousResult = eval(previousSet);
-            if (percentageOf < 0) { percentageOf = `(${percentageOf})`;}
+            if (percentageOf < 0) { percentageOf = `(${percentageOf})`; }
             if (unFinishedTotalLastElement === ')') {
                 unFinishedTotal.pop();
                 unFinishedTotal.push(pressedKey);
@@ -100,7 +103,7 @@ window.addEventListener('keypress', function (event) {
             } else if (lastUsedOperator === '-') {
                 newResult = previousResult - newResult;
             } else if (lastUsedOperator === '/') {
-                newResult = previousResult / percentageOf;
+                newResult = eval(`${previousResult} / ${percentageOf}`);
             }
             unFinishedTotal.push(pressedKey);
             const split = newResult.toString().replace('-', '–').split('');
