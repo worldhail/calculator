@@ -32,7 +32,7 @@ window.addEventListener('keypress', function (event) {
         } else if (forDisplay.length === 0) {
             return;
         } else if (lastUsedOperator !== 'none') {
-            const total = calculate(unFinishedTotal);
+            const total = getTotal(unFinishedTotal);
             forDisplay = [];
             display(total);
             unFinishedTotal.pop();
@@ -141,10 +141,10 @@ function display(number) {
 }
 
 //CALCULATE FUNCTION
-function calculate(unFinishedTotalArray) {
+function getTotal(unFinishedTotalArray) {
     const validInputs = useRegularMinusSign(unFinishedTotalArray);
-    const getToTal = eval(validInputs);
-    return getToTal;
+    const total = eval(validInputs);
+    return total;
 }
 
 //REPLACE ALT-MINUS WITH REGULAR MINUS FUNCTION
