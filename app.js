@@ -7,6 +7,7 @@ const operator = /[\+]|[\-]|[\*]|[\/]/;
 let unFinishedTotal = [''];
 let lastUsedOperator = 'none';
 let forDisplay = [];
+let percentageSwitch = 'off';
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', function (event) {
@@ -71,11 +72,17 @@ window.addEventListener('keypress', function (event) {
             forDisplay.unshift(pressedKey);
         }
         unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
+        
+        if (percentageSwitch === 'on') {
+            percentageSwitch = 'off';
+            unFinishedTotal = ['', ...forDisplay];
+        }
         const changedAltMinus = useRegularMinusSign(forDisplay);
         calculatorScreen.value = changedAltMinus;
 
         //percentage condition
     } else if (pressedKey === '%') {
+        percentageSwitch = 'on';
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
