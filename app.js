@@ -41,8 +41,8 @@ window.addEventListener('keypress', function (event) {
         unFinishedTotal.push(pressedKey);
         lastUsedOperator = pressedKey;
 
-        //for numbers that needed a negative sign
-    } else if (event.altKey === true && event.code === 'Minus') {
+        //for numbers that needed a negative sign (alt-minus)
+    } else if (pressedKey === '–') {
         if (forDisplay.length === 0) { return; }
 
         //unFinishedTotal array will reset once apply a negative sign on a current result
