@@ -150,6 +150,8 @@ window.addEventListener('keypress', function (event) {
             const changedNegativeSign = useRegularMinusSign(forDisplay);
             calculatorScreen.value = changedNegativeSign;
         }
+
+        //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
         lastPressed = pressedKey;
         if (unFinishedTotalLastElement.match(operator)) {
