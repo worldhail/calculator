@@ -145,7 +145,7 @@ window.addEventListener('keypress', function (event) {
             const changedNegativeSign = useRegularMinusSign(forDisplay);
             calculatorScreen.value = changedNegativeSign;
         }
-    } else if (pressedKey === '=') {
+    } else if (pressedKey === '=' || pressedKey === 'Enter') {
         lastPressed = pressedKey;
         if (unFinishedTotalLastElement.match(operator)) {
             unFinishedTotal.pop();
