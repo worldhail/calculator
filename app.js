@@ -27,6 +27,11 @@ window.addEventListener('keypress', function (event) {
             unFinishedTotal.pop();
             unFinishedTotal.push(pressedKey);
             pressedKey = ')';
+        } else if (lastPressed === '=') {
+            forDisplay = [];
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            lastPressed = '';
         }
         display(pressedKey);
 
@@ -36,6 +41,10 @@ window.addEventListener('keypress', function (event) {
             unFinishedTotal.pop();
         } else if (forDisplay.length === 0) {
             return;
+        } else if (lastPressed === '=') {
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            lastPressed = '';
         } else if (lastUsedOperator !== 'none') {
             const total = getTotal(unFinishedTotal);
             forDisplay = [];
@@ -48,7 +57,13 @@ window.addEventListener('keypress', function (event) {
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === '–') {
         if (forDisplay.length === 0) { return; }
-
+        if (lastPressed === '=') {
+            forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
+            unFinishedTotal = [...forDisplay, ''];
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            lastPressed = '';
+        }
         //unFinishedTotal array will reset once apply a negative sign on a current result
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
@@ -95,6 +110,10 @@ window.addEventListener('keypress', function (event) {
             forDisplay = [];
             display(percentageOf);
             unFinishedTotal = ['', '% of ', currentNumber];
+        } else if (lastPressed === '=') {
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            lastPressed = '';
         } else {
             const previousSet = unFinishedTotal
                 .slice(0, unFinishedTotalLastOperatorIndex)
