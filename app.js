@@ -8,6 +8,10 @@ let unFinishedTotal = [''];
 let lastUsedOperator = 'none';
 let forDisplay = [];
 let percentageSwitch = 'off';
+let endsWithOperator = '';
+let lastNumber = '';
+let currentResult = '';
+let lastPressed = '';
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', function (event) {
@@ -72,7 +76,7 @@ window.addEventListener('keypress', function (event) {
             forDisplay.unshift(pressedKey);
         }
         unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
-        
+
         if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
             unFinishedTotal = ['', ...forDisplay];
@@ -86,7 +90,7 @@ window.addEventListener('keypress', function (event) {
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
-        
+
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
             display(percentageOf);
@@ -118,15 +122,63 @@ window.addEventListener('keypress', function (event) {
             const changedNegativeSign = useRegularMinusSign(forDisplay);
             calculatorScreen.value = changedNegativeSign;
         }
+    } else if (pressedKey === '=') {
+        lastPressed = pressedKey;
+        if (unFinishedTotalLastElement.match(operator)) {
+            unFinishedTotal.pop();
+            endsWithOperator = 'yes';
+            lastNumber = [forDisplay].join('') * 1;
+            const total = getTotal(unFinishedTotal).toString();
+            forDisplay = [];
+            display(total);
+            unFinishedTotal = [''];
+        } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
+            currentResult = [...forDisplay].join('') * 1;
+            let newResult = '';
+            if (lastUsedOperator === '+') {
+                newResult = currentResult + lastNumber;
+            } else if (lastUsedOperator === '-') {
+                newResult = currentResult - lastNumber;
+            } else if (lastUsedOperator === '*') {
+                newResult = currentResult * lastNumber;
+            } else if (lastUsedOperator === '/') {
+                newResult = currentResult / lastNumber;
+            }
+            unFinishedTotal = [newResult];
+            const total = getTotal(unFinishedTotal).toString();
+            forDisplay = [];
+            display(total);
+            if (lastNumber < 0) {
+                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, '(', lastNumber.toString(), ')'];
+            } else {
+                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, lastNumber.toString()];
+            }
+        } else {
+            endsWithOperator = 'no';
+            const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
+            lastNumber = eval(unFinishedTotal
+                .slice(unFinishedTotalLastOperatorIndex + 1)
+                .join('')
+                .replace(/[\–]/, '-'));
+            const total = getTotal(unFinishedTotal).toString();
+            forDisplay = [];
+            display(total);
+            unFinishedTotal = [''];
+            display2(unFinishedTotal);
+            return;
+        }
     }
 
-    const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
-    const pressedKeys = unFinishedTotal
-        .join('')
-        .replace(/[\–]|[\*]|[\/]/g, (values) => {
-            return operatorOutput[values]
-        });
-    toBeEqualledScreen.value = pressedKeys;
+    function display2(unFinishedTotal) {
+        const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
+        const pressedKeys = unFinishedTotal
+            .join('')
+            .replace(/[\–]|[\*]|[\/]/g, (values) => {
+                return operatorOutput[values]
+            });
+        toBeEqualledScreen.value = pressedKeys;
+    }
+    display2(unFinishedTotal);
 });
 
 //DISPLAY FUNCTION
