@@ -3,6 +3,7 @@ that needs to run down before the nested if else statement ends*/
 
 const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
+const a = document.querySelectorAll('.ac');
 const operator = /[\+]|[\-]|[\*]|[\/]/;
 let unFinishedTotal = [''];
 let lastUsedOperator = 'none';
@@ -34,6 +35,7 @@ window.addEventListener('keypress', function (event) {
             lastPressed = '';
         }
         display(pressedKey);
+        hideLetter(a);
 
         //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
@@ -240,4 +242,15 @@ function useRegularMinusSign(toDisplay) {
         .join('')
         .replace(/[\–]/g, '-');
     return combinedPressedKeys;
+}
+
+//HIDE LETTER 'A' AND CENTERS LETTER 'C'
+function hideLetter(a) {
+    const a_Opacity = a[0].style.opacity;
+    if (a_Opacity === '0') {
+        return;
+    } else {
+        a[0].style.opacity = '0';
+        a[1].style.cssText = 'position: absolute; transform: translateX(-16px);';
+    }
 }
