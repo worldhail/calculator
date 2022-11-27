@@ -18,22 +18,25 @@ let lastPressed = '';
 window.addEventListener('keypress', function (event) {
     const number = /[\d]|[\.]/;
     let pressedKey = event.key;
-    const unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
     //decimal is added on this condition
     if (number.test(pressedKey)) {
-        if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
+        if (lastPressed === '=' || percentageSwitch === 'on') {
+            forDisplay = [];
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            lastPressed = '';
+            percentageSwitch = 'off';
+            unFinishedTotal = [''];
+            unFinishedTotalLastElement = '';
+        } else if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
         if (unFinishedTotalLastElement === ')') {
             unFinishedTotal.pop();
             unFinishedTotal.push(pressedKey);
             pressedKey = ')';
-        } else if (lastPressed === '=') {
-            forDisplay = [];
-            lastUsedOperator = 'none';
-            endsWithOperator = '';
-            lastPressed = '';
-        }
+        } 
         display(pressedKey);
         hideLetter(a);
 
