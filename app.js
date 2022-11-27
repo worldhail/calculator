@@ -146,7 +146,7 @@ window.addEventListener('keypress', function (event) {
         if (unFinishedTotalLastElement.match(operator)) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
-            lastNumber = [forDisplay].join('') * 1;
+            lastNumber = forDisplay.join('') * 1;
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
             display(total);
