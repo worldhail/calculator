@@ -37,7 +37,10 @@ window.addEventListener('keypress', function (event) {
 
         //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
-        if (unFinishedTotalLastElement.match(operator)) {
+        if (percentageSwitch === 'on') {
+            percentageSwitch = 'off';
+            unFinishedTotal = [...forDisplay, '']
+        } else if (unFinishedTotalLastElement.match(operator)) {
             unFinishedTotal.pop();
         } else if (forDisplay.length === 0) {
             return;
@@ -45,6 +48,7 @@ window.addEventListener('keypress', function (event) {
             lastUsedOperator = 'none';
             endsWithOperator = '';
             lastPressed = '';
+            unFinishedTotal = [...forDisplay, '']
         } else if (lastUsedOperator !== 'none') {
             const total = getTotal(unFinishedTotal);
             forDisplay = [];
@@ -172,6 +176,8 @@ window.addEventListener('keypress', function (event) {
             } else {
                 unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, lastNumber.toString()];
             }
+        } else if (lastUsedOperator === 'none') {
+            return;
         } else {
             endsWithOperator = 'no';
             const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
