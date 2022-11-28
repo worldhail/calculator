@@ -36,7 +36,7 @@ window.addEventListener('keypress', function (event) {
             unFinishedTotal.pop();
             unFinishedTotal.push(pressedKey);
             pressedKey = ')';
-        } 
+        }
         display(pressedKey);
         hideLetter(a);
 
@@ -103,7 +103,8 @@ window.addEventListener('keypress', function (event) {
 
         if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
-            unFinishedTotal = ['', ...forDisplay];
+            lastUsedOperator = 'none';
+            unFinishedTotal = [...forDisplay, ''];
         }
         const changedAltMinus = useRegularMinusSign(forDisplay);
         calculatorScreen.value = changedAltMinus;
@@ -113,7 +114,7 @@ window.addEventListener('keypress', function (event) {
         percentageSwitch = 'on';
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
-        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
+        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator.match(operator));
 
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
