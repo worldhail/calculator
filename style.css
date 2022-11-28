@@ -58,6 +58,10 @@ button:active {
     border: 1px solid white;
 }
 
+button.active {
+    border: 2px solid white;
+}
+
 #operator:hover {
     background-color: rgb(242, 73, 73);
 }
