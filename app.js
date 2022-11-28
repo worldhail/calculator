@@ -119,11 +119,18 @@ window.addEventListener('keypress', function (event) {
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
             display(percentageOf);
-            unFinishedTotal = ['', '% of ', currentNumber];
+            forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
+            unFinishedTotal = ['', '% of ', currentNumber.toString().replace(/[\-]/, '–')];
         } else if (lastPressed === '=') {
             lastUsedOperator = 'none';
             endsWithOperator = '';
             lastPressed = '';
+        } else if (unFinishedTotal.includes('%')) {
+            percentageOf = eval(forDisplay.join('').replace(/[\–]/, '-')) / 100;
+            const currentResult = forDisplay;
+            forDisplay = [];
+            display(percentageOf);
+            unFinishedTotal = ['% of ', ...currentResult, ''];
         } else {
             const previousSet = unFinishedTotal
                 .slice(0, unFinishedTotalLastOperatorIndex)
@@ -184,7 +191,7 @@ window.addEventListener('keypress', function (event) {
             } else {
                 unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, lastNumber.toString()];
             }
-        } else if (lastUsedOperator === 'none') {
+        } else if (lastUsedOperator === 'none' || percentageSwitch === 'on') {
             return;
         } else {
             endsWithOperator = 'no';
