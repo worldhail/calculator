@@ -219,6 +219,7 @@ window.addEventListener('keypress', function (event) {
         toBeEqualledScreen.value = pressedKeys;
     }
     display2(unFinishedTotal);
+    interactiveButton(pressedKey);
 });
 
 //DISPLAY FUNCTION
@@ -266,4 +267,37 @@ function hideLetter(a) {
         a[0].style.opacity = '0';
         a[1].style.cssText = 'position: absolute; transform: translateX(-16px);';
     }
+}
+
+//PRESSED EFFECT FUNCTION
+function interactiveButton(value) {
+
+    const pressedKey = {
+        '0': 'zero',
+        '1': 'one',
+        '2': 'two',
+        '3': 'three',
+        '4': 'four',
+        '5': 'five',
+        '6': 'six',
+        '7': 'seven',
+        '8': 'eight',
+        '9': 'nine',
+        '.': 'decimal',
+        '+': 'addition',
+        '-': 'subtraction',
+        '*': 'multiplcation',
+        '/': 'division',
+        '=': 'equal',
+        '%': 'percent',
+        '–': 'plus-minus-sign',
+        'Enter': 'equal'
+    };
+
+    const button = document.querySelector(`.${pressedKey[value]}`);
+    button.classList.toggle('active');
+    setTimeout(function() {
+        button.classList.toggle('active');
+    }, 100)
+setTimeout
 }
