@@ -115,16 +115,15 @@ window.addEventListener('keypress', function (event) {
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator.match(operator));
-
+        lastUsedOperator = 'none';
+        endsWithOperator = '';
+        lastPressed = '';
+        
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
             display(percentageOf);
             forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
             unFinishedTotal = ['', '% of ', currentNumber.toString().replace(/[\-]/, '–')];
-        } else if (lastPressed === '=') {
-            lastUsedOperator = 'none';
-            endsWithOperator = '';
-            lastPressed = '';
         } else if (unFinishedTotal.includes('%')) {
             percentageOf = eval(forDisplay.join('').replace(/[\–]/, '-')) / 100;
             const currentResult = forDisplay;
@@ -187,7 +186,8 @@ window.addEventListener('keypress', function (event) {
             forDisplay = [];
             display(total);
             if (lastNumber < 0) {
-                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, '(', lastNumber.toString(), ')'];
+                const lastNumberWithNegativeSign = lastNumber.toString().replace(/[\-]/, '–');
+                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')'];
             } else {
                 unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, lastNumber.toString()];
             }
@@ -286,7 +286,7 @@ function interactiveButton(value) {
         '.': 'decimal',
         '+': 'addition',
         '-': 'subtraction',
-        '*': 'multiplcation',
+        '*': 'multiplication',
         '/': 'division',
         '=': 'equal',
         '%': 'percent',
@@ -296,7 +296,7 @@ function interactiveButton(value) {
 
     const button = document.querySelector(`.${pressedKey[value]}`);
     button.classList.toggle('active');
-    setTimeout(function() {
+    setTimeout(function () {
         button.classList.toggle('active');
     }, 100);
 }
