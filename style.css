@@ -59,7 +59,8 @@ button:active {
 }
 
 button.active {
-    border: 2px solid white;
+    border: 1px solid white;
+    opacity: .8;
 }
 
 #operator:hover {

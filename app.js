@@ -298,6 +298,5 @@ function interactiveButton(value) {
     button.classList.toggle('active');
     setTimeout(function() {
         button.classList.toggle('active');
-    }, 100)
-setTimeout
+    }, 100);
 }
