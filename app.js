@@ -207,6 +207,18 @@ window.addEventListener('keypress', function (event) {
             display2(unFinishedTotal);
             return;
         }
+    } else if (pressedKey === 'c') {
+        unFinishedTotal = [''];
+        lastUsedOperator = 'none';
+        forDisplay = [];
+        percentageSwitch = 'off';
+        endsWithOperator = '';
+        lastNumber = '';
+        currentResult = '';
+        lastPressed = '';
+        calculatorScreen.value = '0';
+        a[0].style.opacity = '1';
+        a[1].style.position = 'static';
     }
 
     function display2(unFinishedTotal) {
@@ -291,7 +303,8 @@ function interactiveButton(value) {
         '=': 'equal',
         '%': 'percent',
         '–': 'plus-minus-sign',
-        'Enter': 'equal'
+        'Enter': 'equal',
+        'c': 'reset'
     };
 
     const button = document.querySelector(`.${pressedKey[value]}`);
