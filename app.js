@@ -4,21 +4,21 @@ that needs to run down before the nested if else statement ends*/
 const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
 const a = document.querySelectorAll('.ac');
+const operator = /[\+]|[\-]|[\*]|[\/]/;
 let unFinishedTotal = [''];
+let lastUsedOperator = 'none';
 let forDisplay = [];
+let percentageSwitch = 'off';
+let endsWithOperator = '';
+let lastNumber = '';
+let currentResult = '';
+let lastPressed = '';
 
 //KEYPRESS EVENT LISTENER
-window.addEventListener('keypress', function calculator(event) {
-    const operator = /[\+]|[\-]|[\*]|[\/]/;
+window.addEventListener('keypress', function (event) {
     const number = /[\d]|[\.]/;
     let pressedKey = event.key;
     let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    let lastUsedOperator = 'none';
-    let percentageSwitch = 'off';
-    let endsWithOperator = '';
-    let lastNumber = '';
-    let currentResult = '';
-    let lastPressed = '';
 
     //decimal is added on this condition
     if (number.test(pressedKey)) {
@@ -118,7 +118,7 @@ window.addEventListener('keypress', function calculator(event) {
         lastUsedOperator = 'none';
         endsWithOperator = '';
         lastPressed = '';
-
+        
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
             display(percentageOf);
