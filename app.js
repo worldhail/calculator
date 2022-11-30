@@ -13,12 +13,19 @@ let endsWithOperator = '';
 let lastNumber = '';
 let currentResult = '';
 let lastPressed = '';
+let clickEventis = 'off';
 
 //KEYPRESS EVENT LISTENER
-window.addEventListener('keypress', function (event) {
+window.addEventListener('keypress', (event) => {
+    calculator(event);
+});
+
+function calculator(event) {
     const number = /[\d]|[\.]/;
     let pressedKey = event.key;
     let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+
+    if (clickEventis === 'on') { pressedKey = event; }
 
     //decimal is added on this condition
     if (number.test(pressedKey)) {
@@ -118,7 +125,7 @@ window.addEventListener('keypress', function (event) {
         lastUsedOperator = 'none';
         endsWithOperator = '';
         lastPressed = '';
-        
+
         if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
             forDisplay = [];
             display(percentageOf);
@@ -231,8 +238,13 @@ window.addEventListener('keypress', function (event) {
         toBeEqualledScreen.value = pressedKeys;
     }
     display2(unFinishedTotal);
+
+    if (clickEventis === 'on') {
+        clickEventis = 'off';
+        return;
+    }
     interactiveButton(pressedKey);
-});
+};
 
 //DISPLAY FUNCTION
 function display(number) {
@@ -312,4 +324,30 @@ function interactiveButton(value) {
     setTimeout(function () {
         button.classList.toggle('active');
     }, 100);
+}
+
+const buttons = document.querySelectorAll('button');
+for (let i = 0; i < 20; i++) {
+    buttons[i].addEventListener('click', (event) => {
+        let target = event.target.textContent;
+
+        switch (target) {
+            case 'A':
+            case 'C':
+            case 'AC':
+                target = 'c';
+                break;
+            case '+/-':
+                target = '–';
+                break;
+            case 'x':
+                target = '*';
+                break;
+            case '÷':
+                target = '/';
+        };
+
+        clickEventis = 'on';
+        calculator(target);
+    });
 }
