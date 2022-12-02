@@ -24,7 +24,7 @@ function calculator(event) {
     const number = /[\d]|[\.]/;
     let pressedKey = event.key;
     let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-
+    
     if (clickEventis === 'on') { pressedKey = event; }
 
     //decimal is added on this condition
@@ -212,6 +212,7 @@ function calculator(event) {
             display(total);
             unFinishedTotal = [''];
             display2(unFinishedTotal);
+            decreaseFontSize(inputLength);
             return;
         }
     } else if (pressedKey === 'c') {
@@ -241,8 +242,11 @@ function calculator(event) {
 
     if (clickEventis === 'on') {
         clickEventis = 'off';
+        decreaseFontSize(inputLength);
         return;
     }
+    const inputLength = calculatorScreen.value.length;
+    decreaseFontSize(inputLength);
     interactiveButton(pressedKey);
 };
 
@@ -323,9 +327,10 @@ function interactiveButton(value) {
     button.classList.toggle('active');
     setTimeout(function () {
         button.classList.toggle('active');
-    }, 100);
+    }, 50);
 }
 
+//click event
 const buttons = document.querySelectorAll('button');
 for (let i = 0; i < 20; i++) {
     buttons[i].addEventListener('click', (event) => {
@@ -350,4 +355,43 @@ for (let i = 0; i < 20; i++) {
         clickEventis = 'on';
         calculator(target);
     });
-}
+};
+
+//decrease font-size function
+let stopper = 0;
+function decreaseFontSize(inputLength) {
+    let currentFontSize = getComputedStyle(calculatorScreen).fontSize.replace('px', '') * 1;
+    if (stopper === 2) {
+        forDisplay.pop();
+        forDisplay.push('0');
+        const greaterZero = forDisplay.findLastIndex(number => number !== '0');
+        const zero = forDisplay.splice(greaterZero + 1);
+        forDisplay.pop();
+        forDisplay = [...forDisplay, ...zero];
+        calculatorScreen.value = forDisplay.join('');
+        if (forDisplay.every(item => item === '0')) {
+            forDisplay = [];
+            calculatorScreen.value = '0'
+            calculatorScreen.style.fontSize = '2.5rem';
+        }
+        unFinishedTotal = ['', ...forDisplay];
+        toBeEqualledScreen.value = unFinishedTotal.join('');
+    } else if (inputLength > 11) {
+        let difference = inputLength - 11;
+        for (let i = 4; i < difference; i++) {
+            difference--;
+        }
+        for (let j = 7; j < difference; j++) {
+            difference--;
+        }
+        for (let k = 9; k < difference; k++) {
+            difference -= 1;
+            stopper++;
+        }
+        const fontSizeReduction = difference * 3;
+        const newFontSize = 40 - fontSizeReduction;
+        calculatorScreen.style.fontSize = `${newFontSize}px`;
+    } else if (currentFontSize !== 40) {
+        calculatorScreen.style.fontSize = '2.5rem';
+    }
+};
