@@ -167,7 +167,7 @@ function calculator(event) {
 
         //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
-        lastPressed = pressedKey;
+        lastPressed = '=';
         if (unFinishedTotalLastElement.match(operator)) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
