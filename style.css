@@ -96,6 +96,7 @@ input {
     background-color: rgb(71, 71, 71);
     border-radius: 5px 5px 0 0;
     margin-bottom: 4px;
+    caret-color: transparent;
 }
 
 .to-be-equalled {

@@ -17,14 +17,93 @@ let clickEventis = 'off';
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', (event) => {
-    calculator(event);
+    const allowedInput = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|[Enter]|[\\–]|[c]');
+    const cannotPrevented = ['e', 'r', 't', 'n', 'E'];
+    if (cannotPrevented.includes(event.key)) {
+        event.preventDefault();
+        return;
+    }
+    if (event.key.match(allowedInput)) {
+        calculator(event);
+    }
+    event.preventDefault();
+    calculatorScreen.focus();
+    return;
 });
 
+//DELETE INPUT FUNCTION WITH EVENT LISTENER
+calculatorScreen.addEventListener('input', (event) => {
+    const screenValueLength = calculatorScreen.value.length;
+    if (event.inputType === 'deleteContentBackward') {
+        forDisplay.pop();
+        let lastOperator = unFinishedTotal.findLastIndex(usedOperator => operator.test(usedOperator));
+        if (unFinishedTotal.slice(-1)[0] === ')') {
+            unFinishedTotal.splice(-2);
+            unFinishedTotal.push(')');
+
+            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+                unFinishedTotal.splice(lastOperator + 1);
+                forDisplay = [];
+            }
+
+        } else if (lastOperator !== -1) {
+            const available2Delete = unFinishedTotal.splice(lastOperator + 1);
+            available2Delete.pop();
+            unFinishedTotal.push(...available2Delete);
+        } else {
+            unFinishedTotal.pop();
+            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+                unFinishedTotal = [''];
+                forDisplay = [];
+            }
+        }
+        calculatorScreen.value = useRegularMinusSign(forDisplay);
+        toBeEqualledScreen.value = useRegularMinusSign(unFinishedTotal);
+    }
+    if (forDisplay.length === 0) {
+        calculatorScreen.value = '0';
+    }
+    decreaseFontSize(screenValueLength);
+});
+
+//ANYTHING THAT WILL BE CLICK, THE CALCULATOR MAIN SCREEN WILL GET FOCUS SO DELETE FUNCTION WOULD ALWAYS POINT OUT THE SCREEN
+window.addEventListener('click', () => {
+    calculatorScreen.focus();
+});
+
+//CLICK EVENT FUNCTION
+const buttons = document.querySelectorAll('button');
+for (let i = 0; i < 20; i++) {
+    buttons[i].addEventListener('click', (event) => {
+        let target = event.target.textContent;
+
+        switch (target) {
+            case 'A':
+            case 'C':
+            case 'AC':
+                target = 'c';
+                break;
+            case '+/-':
+                target = '–';
+                break;
+            case 'x':
+                target = '*';
+                break;
+            case '÷':
+                target = '/';
+        };
+
+        clickEventis = 'on';
+        calculator(target);
+    });
+};
+
+//CALCULATOR FUNCTION
 function calculator(event) {
     const number = /[\d]|[\.]/;
     let pressedKey = event.key;
     let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    
+
     if (clickEventis === 'on') { pressedKey = event; }
 
     //decimal is added on this condition
@@ -239,13 +318,12 @@ function calculator(event) {
         toBeEqualledScreen.value = pressedKeys;
     }
     display2(unFinishedTotal);
-
+    const inputLength = calculatorScreen.value.length;
     if (clickEventis === 'on') {
         clickEventis = 'off';
         decreaseFontSize(inputLength);
         return;
     }
-    const inputLength = calculatorScreen.value.length;
     decreaseFontSize(inputLength);
     interactiveButton(pressedKey);
 };
@@ -330,34 +408,7 @@ function interactiveButton(value) {
     }, 50);
 }
 
-//click event
-const buttons = document.querySelectorAll('button');
-for (let i = 0; i < 20; i++) {
-    buttons[i].addEventListener('click', (event) => {
-        let target = event.target.textContent;
-
-        switch (target) {
-            case 'A':
-            case 'C':
-            case 'AC':
-                target = 'c';
-                break;
-            case '+/-':
-                target = '–';
-                break;
-            case 'x':
-                target = '*';
-                break;
-            case '÷':
-                target = '/';
-        };
-
-        clickEventis = 'on';
-        calculator(target);
-    });
-};
-
-//decrease font-size function
+//FONT SIZE REDUCTION FUNCTION
 let stopper = 0;
 function decreaseFontSize(inputLength) {
     let currentFontSize = getComputedStyle(calculatorScreen).fontSize.replace('px', '') * 1;
