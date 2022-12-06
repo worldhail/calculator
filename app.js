@@ -347,10 +347,10 @@ function display(input) {
             }
         }
         forDisplay.push(input);
-        const changedNegativeSign = useRegularMinusSign(forDisplay);
-        mainScreenValue(changedNegativeSign);
     }
     unFinishedTotal.push(input);
+    const changedNegativeSign = useRegularMinusSign(forDisplay);
+    mainScreenValue(changedNegativeSign);
 }
 
 //GET THE INDEX OF LAST USED OPERATOR IN UNFINISH TOTAL ARRAY
