@@ -265,7 +265,9 @@ function calculator(event) {
         //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
         equalSignWasPressed = true;
-        if (operator.test(unFinishedTotalLastElement)) {
+
+        //avoiding unFinishedTotalLastElement not to return true when it's value is like '2.5425123512e+13'
+        if (operator.test(unFinishedTotalLastElement) && !unFinishedTotalLastElement.includes('e')) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
             lastNumber = forDisplay.join('') * 1;
