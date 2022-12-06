@@ -13,7 +13,7 @@ let percentageSwitch = 'off';
 let endsWithOperator = '';
 let lastNumber = '';
 let currentResult = '';
-let lastPressed = '';
+let equalSignWasPressed = false;
 let clickEventis = 'off';
 let lastUsedOperatorIndex;
 
@@ -112,11 +112,11 @@ function calculator(event) {
 
     //decimal is added on this condition
     if (number.test(pressedKey)) {
-        if (lastPressed === '=' || percentageSwitch === 'on') {
+        if (equalSignWasPressed || percentageSwitch === 'on') {
             forDisplay = [];
             lastUsedOperator = 'none';
             endsWithOperator = '';
-            lastPressed = '';
+            equalSignWasPressed = false;
             percentageSwitch = 'off';
             unFinishedTotal = [];
             unFinishedTotalLastElement = '';
@@ -140,10 +140,10 @@ function calculator(event) {
             unFinishedTotal.pop();
         } else if (forDisplay.length === 0) {
             return;
-        } else if (lastPressed === '=') {
+        } else if (equalSignWasPressed) {
             lastUsedOperator = 'none';
             endsWithOperator = '';
-            lastPressed = '';
+            equalSignWasPressed = false;
             unFinishedTotal = [...forDisplay]
         } else if (lastUsedOperator !== 'none') {
             const total = getTotal(unFinishedTotal);
@@ -157,12 +157,12 @@ function calculator(event) {
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === '–') {
         if (forDisplay.length === 0) { return; }
-        if (lastPressed === '=') {
+        if (equalSignWasPressed) {
             forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
             unFinishedTotal = [...forDisplay];
             lastUsedOperator = 'none';
             endsWithOperator = '';
-            lastPressed = '';
+            equalSignWasPressed = false;
         }
         //unFinishedTotal array will reset once apply a negative sign on a current result
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
@@ -207,7 +207,7 @@ function calculator(event) {
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         lastUsedOperator = 'none';
         endsWithOperator = '';
-        lastPressed = '';
+        equalSignWasPressed = false;
 
         if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
             forDisplay = [];
@@ -250,7 +250,7 @@ function calculator(event) {
 
         //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
-        lastPressed = '=';
+        equalSignWasPressed = true;
         if (operator.test(unFinishedTotalLastElement)) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
@@ -306,7 +306,7 @@ function calculator(event) {
         endsWithOperator = '';
         lastNumber = '';
         currentResult = '';
-        lastPressed = '';
+        equalSignWasPressed = false;
         mainScreenValue('0');
         a[0].style.opacity = '1';
         a[1].style.position = 'static';
