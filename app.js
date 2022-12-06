@@ -220,7 +220,6 @@ function calculator(event) {
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-        lastUsedOperator = 'none';
         endsWithOperator = '';
         equalSignWasPressed = false;
 
