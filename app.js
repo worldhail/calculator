@@ -317,15 +317,6 @@ function calculator(event) {
         a[1].style.position = 'static';
     }
 
-    function smallScreenDisplay(unFinishedTotal) {
-        const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
-        const pressedKeys = unFinishedTotal
-            .join('')
-            .replace(/[\–]|[\*]|[\/]/g, (values) => {
-                return operatorOutput[values]
-            });
-        toBeEqualledScreen.value = pressedKeys;
-    }
     smallScreenDisplay(unFinishedTotal);
     const inputLength = calculatorScreen.value.length;
     if (clickEventis === 'on') {
@@ -356,6 +347,17 @@ function display(input) {
     unFinishedTotal.push(input);
     const changedNegativeSign = useRegularMinusSign(forDisplay);
     mainScreenValue(changedNegativeSign);
+}
+
+// DISPLAY FUNCTION FOR SMALL SCREEN WHICH TO BE TOTALLED
+function smallScreenDisplay(array) {
+    const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
+    const pressedKeys = array
+        .join('')
+        .replace(/[\–]|[\*]|[\/]/g, (values) => {
+            return operatorOutput[values]
+        });
+    toBeEqualledScreen.value = pressedKeys;
 }
 
 //GET THE INDEX OF LAST USED OPERATOR IN UNFINISH TOTAL ARRAY
