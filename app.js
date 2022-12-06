@@ -16,6 +16,7 @@ let currentResult = '';
 let equalSignWasPressed = false;
 let clickEventis = 'off';
 let lastUsedOperatorIndex;
+let mainScreenLength;
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', (event) => {
@@ -42,7 +43,6 @@ calculatorScreen.addEventListener('input', (event) => {
 //DELETE FUNCTION
 function deleteLastInput(throughEvent) {
     let onDisplay = [...forDisplay];
-    const screenValueLength = calculatorScreen.value.length;
     if (throughEvent.inputType === 'deleteContentBackward') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
@@ -79,7 +79,8 @@ function deleteLastInput(throughEvent) {
     if (forDisplay.length === 0) {
         mainScreenValue('0');
     }
-    decreaseFontSize(screenValueLength);
+    mainScreenLength = calculatorScreen.value.length;
+    decreaseFontSize(mainScreenLength);
 };
 
 //ANYTHING THAT WILL BE CLICK, THE CALCULATOR MAIN SCREEN WILL GET FOCUS SO DELETE FUNCTION WOULD ALWAYS POINT OUT THE SCREEN
@@ -306,7 +307,8 @@ function calculator(event) {
             display(total);
             unFinishedTotal = [];
             smallScreenDisplay(unFinishedTotal);
-            decreaseFontSize(calculatorScreen.value.length);
+            mainScreenLength = calculatorScreen.value.length;
+            decreaseFontSize(mainScreenLength);
             return;
         }
     } else if (pressedKey === 'c') {
@@ -324,13 +326,13 @@ function calculator(event) {
     }
 
     smallScreenDisplay(unFinishedTotal);
-    const inputLength = calculatorScreen.value.length;
+    mainScreenLength = calculatorScreen.value.length;
     if (clickEventis === 'on') {
         clickEventis = 'off';
-        decreaseFontSize(inputLength);
+        decreaseFontSize(mainScreenLength);
         return;
     }
-    decreaseFontSize(inputLength);
+    decreaseFontSize(mainScreenLength);
     interactiveButton(event.key);
 };
 
@@ -474,5 +476,5 @@ function decreaseFontSize(inputLength) {
 
 //RETURN CALCULATOR SCREEN VALUE
 function mainScreenValue(displayed) {
-    return calculatorScreen.value = displayed;
+    calculatorScreen.value = displayed;
 }
