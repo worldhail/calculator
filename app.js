@@ -43,7 +43,7 @@ calculatorScreen.addEventListener('input', (event) => {
 //DELETE FUNCTION
 function deleteLastInput(throughEvent) {
     let onDisplay = [...forDisplay];
-    if (throughEvent.inputType === 'deleteContentBackward') {
+    if (throughEvent.inputType === 'deleteContentBackward' || throughEvent === 'Del') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (equalSignWasPressed || percentageSwitch === 'on') {
@@ -108,8 +108,11 @@ for (let i = 0; i < 20; i++) {
                 break;
             case '÷':
                 target = '/';
+                break;
+            case 'Del':
+                deleteLastInput(target);
+                return;
         };
-
         clickEventis = 'on';
         calculator(target);
     });
