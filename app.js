@@ -5,7 +5,8 @@ const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
 const a = document.querySelectorAll('.ac');
 const operator = /[\+]|[\-]|[\*]|[\/]/;
-let unFinishedTotal = [''];
+const number = /[\d]|[\.]/;
+let unFinishedTotal = [];
 let lastUsedOperator = 'none';
 let forDisplay = [];
 let percentageSwitch = 'off';
@@ -37,7 +38,10 @@ calculatorScreen.addEventListener('input', (event) => {
     if (event.inputType === 'deleteContentBackward') {
         forDisplay.pop();
         let lastOperator = unFinishedTotal.findLastIndex(usedOperator => operator.test(usedOperator));
-        if (unFinishedTotal.slice(-1)[0] === ')') {
+        if (unFinishedTotal.join('').includes('%')) {
+            forDisplay = [];
+            unFinishedTotal = [];
+        } else if (unFinishedTotal.slice(-1)[0] === ')') {
             unFinishedTotal.splice(-2);
             unFinishedTotal.push(')');
 
@@ -53,15 +57,15 @@ calculatorScreen.addEventListener('input', (event) => {
         } else {
             unFinishedTotal.pop();
             if (forDisplay[0] === '–' && forDisplay.length === 1) {
-                unFinishedTotal = [''];
+                unFinishedTotal = [];
                 forDisplay = [];
             }
-        }
-        calculatorScreen.value = useRegularMinusSign(forDisplay);
+        }1
+        mainScreenValue(useRegularMinusSign(forDisplay));
         toBeEqualledScreen.value = useRegularMinusSign(unFinishedTotal);
     }
     if (forDisplay.length === 0) {
-        calculatorScreen.value = '0';
+        mainScreenValue('0');
     }
     decreaseFontSize(screenValueLength);
 });
@@ -100,7 +104,6 @@ for (let i = 0; i < 20; i++) {
 
 //CALCULATOR FUNCTION
 function calculator(event) {
-    const number = /[\d]|[\.]/;
     let pressedKey = event.key;
     let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
@@ -114,11 +117,12 @@ function calculator(event) {
             endsWithOperator = '';
             lastPressed = '';
             percentageSwitch = 'off';
-            unFinishedTotal = [''];
+            unFinishedTotal = [];
             unFinishedTotalLastElement = '';
-        } else if (unFinishedTotalLastElement.match(operator)) { forDisplay = []; }
+        } else if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
         if (unFinishedTotalLastElement === ')') {
+            forDisplay.push(pressedKey);
             unFinishedTotal.pop();
             unFinishedTotal.push(pressedKey);
             pressedKey = ')';
@@ -130,8 +134,8 @@ function calculator(event) {
     } else if (operator.test(pressedKey)) {
         if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
-            unFinishedTotal = [...forDisplay, '']
-        } else if (unFinishedTotalLastElement.match(operator)) {
+            unFinishedTotal = [...forDisplay]
+        } else if (operator.test(unFinishedTotalLastElement)) {
             unFinishedTotal.pop();
         } else if (forDisplay.length === 0) {
             return;
@@ -139,7 +143,7 @@ function calculator(event) {
             lastUsedOperator = 'none';
             endsWithOperator = '';
             lastPressed = '';
-            unFinishedTotal = [...forDisplay, '']
+            unFinishedTotal = [...forDisplay]
         } else if (lastUsedOperator !== 'none') {
             const total = getTotal(unFinishedTotal);
             forDisplay = [];
@@ -154,7 +158,7 @@ function calculator(event) {
         if (forDisplay.length === 0) { return; }
         if (lastPressed === '=') {
             forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
-            unFinishedTotal = [...forDisplay, ''];
+            unFinishedTotal = [...forDisplay];
             lastUsedOperator = 'none';
             endsWithOperator = '';
             lastPressed = '';
@@ -163,10 +167,9 @@ function calculator(event) {
         const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
         const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
         const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
-        if (numberOfUsedOperator > 1 && unFinishedTotalLastElement.match(operator)) {
+        if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
             const currentResult = forDisplay.toString().replace('-', '–').split('');
             forDisplay = currentResult;
-            unFinishedTotal = currentResult.concat('');
         }
         if (forDisplay[0] === '–') {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
@@ -190,10 +193,10 @@ function calculator(event) {
         if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
             lastUsedOperator = 'none';
-            unFinishedTotal = [...forDisplay, ''];
+            unFinishedTotal = [...forDisplay];
         }
         const changedAltMinus = useRegularMinusSign(forDisplay);
-        calculatorScreen.value = changedAltMinus;
+        mainScreenValue(changedAltMinus);
 
         //percentage condition
     } else if (pressedKey === '%') {
@@ -205,17 +208,17 @@ function calculator(event) {
         endsWithOperator = '';
         lastPressed = '';
 
-        if (unFinishedTotalLastElement.match(operator) || !unFinishedTotal.join('').match(operator)) {
+        if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
             forDisplay = [];
             display(percentageOf);
             forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
-            unFinishedTotal = ['', '% of ', currentNumber.toString().replace(/[\-]/, '–')];
+            unFinishedTotal = ['% of ', currentNumber.toString().replace(/[\-]/, '–')];
         } else if (unFinishedTotal.includes('%')) {
             percentageOf = eval(forDisplay.join('').replace(/[\–]/, '-')) / 100;
             const currentResult = forDisplay;
             forDisplay = [];
             display(percentageOf);
-            unFinishedTotal = ['% of ', ...currentResult, ''];
+            unFinishedTotal = ['% of ', ...currentResult];
         } else {
             const previousSet = unFinishedTotal
                 .slice(0, unFinishedTotalLastOperatorIndex)
@@ -241,20 +244,20 @@ function calculator(event) {
             const split = newResult.toString().replace('-', '–').split('');
             forDisplay = split;
             const changedNegativeSign = useRegularMinusSign(forDisplay);
-            calculatorScreen.value = changedNegativeSign;
+            mainScreenValue(changedNegativeSign);
         }
 
         //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
         lastPressed = '=';
-        if (unFinishedTotalLastElement.match(operator)) {
+        if (operator.test(unFinishedTotalLastElement)) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
             lastNumber = forDisplay.join('') * 1;
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
             display(total);
-            unFinishedTotal = [''];
+            unFinishedTotal = [];
         } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
             currentResult = [...forDisplay].join('') * 1;
             let newResult = '';
@@ -273,9 +276,9 @@ function calculator(event) {
             display(total);
             if (lastNumber < 0) {
                 const lastNumberWithNegativeSign = lastNumber.toString().replace(/[\-]/, '–');
-                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')'];
+                unFinishedTotal = [currentResult.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')'];
             } else {
-                unFinishedTotal = ['', currentResult.toString(), lastUsedOperator, lastNumber.toString()];
+                unFinishedTotal = [currentResult.toString(), lastUsedOperator, lastNumber.toString()];
             }
         } else if (lastUsedOperator === 'none' || percentageSwitch === 'on') {
             return;
@@ -289,13 +292,13 @@ function calculator(event) {
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
             display(total);
-            unFinishedTotal = [''];
-            display2(unFinishedTotal);
-            decreaseFontSize(inputLength);
+            unFinishedTotal = [];
+            smallScreenDisplay(unFinishedTotal);
+            decreaseFontSize(calculatorScreen.value.length);
             return;
         }
     } else if (pressedKey === 'c') {
-        unFinishedTotal = [''];
+        unFinishedTotal = [];
         lastUsedOperator = 'none';
         forDisplay = [];
         percentageSwitch = 'off';
@@ -303,12 +306,12 @@ function calculator(event) {
         lastNumber = '';
         currentResult = '';
         lastPressed = '';
-        calculatorScreen.value = '0';
+        mainScreenValue('0');
         a[0].style.opacity = '1';
         a[1].style.position = 'static';
     }
 
-    function display2(unFinishedTotal) {
+    function smallScreenDisplay(unFinishedTotal) {
         const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
         const pressedKeys = unFinishedTotal
             .join('')
@@ -317,7 +320,7 @@ function calculator(event) {
             });
         toBeEqualledScreen.value = pressedKeys;
     }
-    display2(unFinishedTotal);
+    smallScreenDisplay(unFinishedTotal);
     const inputLength = calculatorScreen.value.length;
     if (clickEventis === 'on') {
         clickEventis = 'off';
@@ -325,28 +328,28 @@ function calculator(event) {
         return;
     }
     decreaseFontSize(inputLength);
-    interactiveButton(pressedKey);
+    interactiveButton(event.key);
 };
 
 //DISPLAY FUNCTION
-function display(number) {
+function display(input) {
     const forDisplayFirstIndex = forDisplay[0];
     const forDisplayLength = forDisplay.length;
-
-    if (number === '.' && forDisplayLength === 0) {
-        forDisplay.push(0);
-        unFinishedTotal.push(0);
-    } else if (forDisplayFirstIndex === '0' && forDisplayLength === 1) {
-        if (number !== '.') {
-            forDisplay.pop();
-            unFinishedTotal.pop();
+    if (number.test(input)) {
+        if (input === '.' && forDisplayLength === 0) {
+            forDisplay.push(0);
+            unFinishedTotal.push(0);
+        } else if (forDisplayFirstIndex === '0' && forDisplayLength === 1) {
+            if (input !== '.') {
+                forDisplay.pop();
+                unFinishedTotal.pop();
+            }
         }
+        forDisplay.push(input);
+        const changedNegativeSign = useRegularMinusSign(forDisplay);
+        mainScreenValue(changedNegativeSign);
     }
-    unFinishedTotal.push(number);
-    if (number === ')') { number = unFinishedTotal.slice(-2, -1)[0]; }
-    forDisplay.push(number);
-    const changedNegativeSign = useRegularMinusSign(forDisplay);
-    calculatorScreen.value = changedNegativeSign;
+    unFinishedTotal.push(input);
 }
 
 //CALCULATE FUNCTION
@@ -412,7 +415,7 @@ function interactiveButton(value) {
 let stopper = 0;
 function decreaseFontSize(inputLength) {
     let currentFontSize = getComputedStyle(calculatorScreen).fontSize.replace('px', '') * 1;
-    if (stopper === 2) {
+    if (stopper === 2 && inputLength === 35) {
         forDisplay.pop();
         forDisplay.push('0');
         const greaterZero = forDisplay.findLastIndex(number => number !== '0');
@@ -422,10 +425,11 @@ function decreaseFontSize(inputLength) {
         calculatorScreen.value = forDisplay.join('');
         if (forDisplay.every(item => item === '0')) {
             forDisplay = [];
-            calculatorScreen.value = '0'
+            stopper = 0;
+            mainScreenValue('0');
             calculatorScreen.style.fontSize = '2.5rem';
         }
-        unFinishedTotal = ['', ...forDisplay];
+        unFinishedTotal = [...forDisplay];
         toBeEqualledScreen.value = unFinishedTotal.join('');
     } else if (inputLength > 11) {
         let difference = inputLength - 11;
@@ -446,3 +450,8 @@ function decreaseFontSize(inputLength) {
         calculatorScreen.style.fontSize = '2.5rem';
     }
 };
+
+//RETURN CALCULATOR SCREEN VALUE
+function mainScreenValue(displayed) {
+    return calculatorScreen.value = displayed;
+}
