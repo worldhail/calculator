@@ -68,7 +68,7 @@ calculatorScreen.addEventListener('input', (event) => {
             }
         }
         mainScreenValue(useRegularMinusSign(forDisplay));
-        toBeEqualledScreen.value = useRegularMinusSign(unFinishedTotal);
+        smallScreenDisplay(unFinishedTotal);
     }
     if (forDisplay.length === 0) {
         mainScreenValue('0');
