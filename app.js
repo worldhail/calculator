@@ -121,13 +121,7 @@ for (let i = 0; i < 20; i++) {
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
-
-    //accessing the last element twice to protect other conditions of operator.test(unFinishedTotalLastElement)
-    //as there may some instances that the last element is like '1.2352626e+32' and it would return true
-    let unFinishedTotalLastElement = unFinishedTotal
-        .slice(-1)[0]
-        .split('')
-        .slice(-1)[0];
+    let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
     if (clickEventis === 'on') { pressedKey = event; }
 
