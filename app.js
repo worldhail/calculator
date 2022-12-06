@@ -35,7 +35,7 @@ window.addEventListener('keypress', (event) => {
 
 //DELETE FUNCTION WITH INPUT EVENT LISTENER
 calculatorScreen.addEventListener('input', (event) => {
-
+    deleteLastInput(event);
 });
 
 //DELETE FUNCTION
