@@ -36,6 +36,7 @@ window.addEventListener('keypress', (event) => {
 //DELETE FUNCTION WITH INPUT EVENT LISTENER
 calculatorScreen.addEventListener('input', (event) => {
     deleteLastInput(event);
+    interactiveButton(event.inputType);
 });
 
 //DELETE FUNCTION
@@ -420,7 +421,8 @@ function interactiveButton(value) {
         '%': 'percent',
         '–': 'plus-minus-sign',
         'Enter': 'equal',
-        'c': 'reset'
+        'c': 'reset',
+        'deleteContentBackward': 'delete'
     };
 
     const button = document.querySelector(`.${pressedKey[value]}`);
