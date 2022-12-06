@@ -15,6 +15,7 @@ let lastNumber = '';
 let currentResult = '';
 let lastPressed = '';
 let clickEventis = 'off';
+let lastUsedOperatorIndex;
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', (event) => {
@@ -37,7 +38,7 @@ calculatorScreen.addEventListener('input', (event) => {
     const screenValueLength = calculatorScreen.value.length;
     if (event.inputType === 'deleteContentBackward') {
         forDisplay.pop();
-        let lastOperator = unFinishedTotal.findLastIndex(usedOperator => operator.test(usedOperator));
+        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (unFinishedTotal.join('').includes('%')) {
             forDisplay = [];
             unFinishedTotal = [];
@@ -46,12 +47,12 @@ calculatorScreen.addEventListener('input', (event) => {
             unFinishedTotal.push(')');
 
             if (forDisplay[0] === '–' && forDisplay.length === 1) {
-                unFinishedTotal.splice(lastOperator + 1);
+                unFinishedTotal.splice(lastUsedOperatorIndex + 1);
                 forDisplay = [];
             }
 
-        } else if (lastOperator !== -1) {
-            const available2Delete = unFinishedTotal.splice(lastOperator + 1);
+        } else if (lastUsedOperatorIndex !== -1) {
+            const available2Delete = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
             available2Delete.pop();
             unFinishedTotal.push(...available2Delete);
         } else {
@@ -60,7 +61,7 @@ calculatorScreen.addEventListener('input', (event) => {
                 unFinishedTotal = [];
                 forDisplay = [];
             }
-        }1
+        }
         mainScreenValue(useRegularMinusSign(forDisplay));
         toBeEqualledScreen.value = useRegularMinusSign(unFinishedTotal);
     }
@@ -164,8 +165,8 @@ function calculator(event) {
             lastPressed = '';
         }
         //unFinishedTotal array will reset once apply a negative sign on a current result
-        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
-        const unFinishedTotalLastNumber = unFinishedTotal.splice(unFinishedTotalLastOperatorIndex + 1);
+        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+        const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
         const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
         if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
             const currentResult = forDisplay.toString().replace('-', '–').split('');
@@ -203,7 +204,7 @@ function calculator(event) {
         percentageSwitch = 'on';
         const currentNumber = calculatorScreen.value * 1;
         let percentageOf = currentNumber / 100;
-        const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator.match(operator));
+        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         lastUsedOperator = 'none';
         endsWithOperator = '';
         lastPressed = '';
@@ -221,7 +222,7 @@ function calculator(event) {
             unFinishedTotal = ['% of ', ...currentResult];
         } else {
             const previousSet = unFinishedTotal
-                .slice(0, unFinishedTotalLastOperatorIndex)
+                .slice(0, lastUsedOperatorIndex)
                 .join('')
                 .replace(/[\–]/, '-');
             const previousResult = eval(previousSet);
@@ -284,9 +285,9 @@ function calculator(event) {
             return;
         } else {
             endsWithOperator = 'no';
-            const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => usedOperator === lastUsedOperator);
+            lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
             lastNumber = eval(unFinishedTotal
-                .slice(unFinishedTotalLastOperatorIndex + 1)
+                .slice(lastUsedOperatorIndex + 1)
                 .join('')
                 .replace(/[\–]/, '-'));
             const total = getTotal(unFinishedTotal).toString();
@@ -350,6 +351,12 @@ function display(input) {
         mainScreenValue(changedNegativeSign);
     }
     unFinishedTotal.push(input);
+}
+
+//GET THE INDEX OF LAST USED OPERATOR IN UNFINISH TOTAL ARRAY
+function getLastUsedOperatorIndex(array) {
+    const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => operator.test(usedOperator));
+    return unFinishedTotalLastOperatorIndex;
 }
 
 //CALCULATE FUNCTION
