@@ -33,15 +33,15 @@ window.addEventListener('keypress', (event) => {
     return;
 });
 
-//DELETE INPUT FUNCTION WITH EVENT LISTENER
+//DELETE FUNCTION WITH INPUT EVENT LISTENER
 calculatorScreen.addEventListener('input', (event) => {
+    let onDisplay = [...forDisplay];
     const screenValueLength = calculatorScreen.value.length;
     if (event.inputType === 'deleteContentBackward') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-        if (unFinishedTotal.join('').includes('%')) {
-            forDisplay = [];
-            unFinishedTotal = [];
+        if (equalSignWasPressed || percentageSwitch === 'on') {
+            forDisplay = onDisplay;
         } else if (unFinishedTotal.slice(-1)[0] === ')') {
             unFinishedTotal.splice(-2);
             unFinishedTotal.push(')');
@@ -53,8 +53,13 @@ calculatorScreen.addEventListener('input', (event) => {
 
         } else if (lastUsedOperatorIndex !== -1) {
             const available2Delete = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
-            available2Delete.pop();
-            unFinishedTotal.push(...available2Delete);
+            if (available2Delete.length === 0) {
+                forDisplay = onDisplay;
+            } else {
+                available2Delete.pop();
+                unFinishedTotal.push(...available2Delete);
+            }
+
         } else {
             unFinishedTotal.pop();
             if (forDisplay[0] === '–' && forDisplay.length === 1) {
@@ -355,7 +360,7 @@ function display(input) {
 
 //GET THE INDEX OF LAST USED OPERATOR IN UNFINISH TOTAL ARRAY
 function getLastUsedOperatorIndex(array) {
-    const unFinishedTotalLastOperatorIndex = unFinishedTotal.findLastIndex(usedOperator => operator.test(usedOperator));
+    const unFinishedTotalLastOperatorIndex = array.findLastIndex(usedOperator => operator.test(usedOperator));
     return unFinishedTotalLastOperatorIndex;
 }
 
