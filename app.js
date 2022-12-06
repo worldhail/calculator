@@ -296,7 +296,7 @@ function calculator(event) {
                 unFinishedTotal = [currentResult.toString(), lastUsedOperator, lastNumber.toString()];
             }
         } else if (lastUsedOperator === 'none' || percentageSwitch === 'on') {
-            return;
+            unFinishedTotal = [];
         } else {
             endsWithOperator = 'no';
             lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
@@ -308,10 +308,10 @@ function calculator(event) {
             forDisplay = [];
             display(total);
             unFinishedTotal = [];
-            smallScreenDisplay(unFinishedTotal);
-            mainScreenLength = calculatorScreen.value.length;
-            decreaseFontSize(mainScreenLength);
-            return;
+            // smallScreenDisplay(unFinishedTotal);
+            // mainScreenLength = calculatorScreen.value.length;
+            // decreaseFontSize(mainScreenLength);
+            // return;
         }
     } else if (pressedKey === 'c') {
         unFinishedTotal = [];
