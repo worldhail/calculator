@@ -35,9 +35,14 @@ window.addEventListener('keypress', (event) => {
 
 //DELETE FUNCTION WITH INPUT EVENT LISTENER
 calculatorScreen.addEventListener('input', (event) => {
+
+});
+
+//DELETE FUNCTION
+function deleteLastInput(throughEvent) {
     let onDisplay = [...forDisplay];
     const screenValueLength = calculatorScreen.value.length;
-    if (event.inputType === 'deleteContentBackward') {
+    if (throughEvent.inputType === 'deleteContentBackward') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (equalSignWasPressed || percentageSwitch === 'on') {
@@ -74,7 +79,7 @@ calculatorScreen.addEventListener('input', (event) => {
         mainScreenValue('0');
     }
     decreaseFontSize(screenValueLength);
-});
+};
 
 //ANYTHING THAT WILL BE CLICK, THE CALCULATOR MAIN SCREEN WILL GET FOCUS SO DELETE FUNCTION WOULD ALWAYS POINT OUT THE SCREEN
 window.addEventListener('click', () => {
