@@ -241,7 +241,7 @@ function calculator(event) {
         a[1].style.position = 'static';
     }
 
-    smallScreenDisplay(unFinishedTotal);
+    updateSubScreen(unFinishedTotal);
     mainScreenLength = calculatorScreen.value.length;
     if (clickEventis === 'on') {
         clickEventis = 'off';
@@ -295,7 +295,7 @@ function deleteLastInput(throughEvent) {
             }
         }
         calculatorScreen.value = useRegularMinusSign(forDisplay);
-        smallScreenDisplay(unFinishedTotal);
+        updateSubScreen(unFinishedTotal);
     }
     if (forDisplay.length === 0) {
         calculatorScreen.value = '0';
@@ -356,7 +356,7 @@ function updateMainScreen(input) {
 }
 
 // DISPLAY FUNCTION FOR SMALL SCREEN WHICH TO BE TOTALLED
-function smallScreenDisplay(array) {
+function updateSubScreen(array) {
     const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
     const pressedKeys = array
         .join('')
