@@ -56,7 +56,7 @@ function calculator(event) {
             unFinishedTotal.push(pressedKey);
             pressedKey = ')';
         }
-        display(pressedKey);
+        updateMainScreen(pressedKey);
         hideLetter(a);
 
         //operator keys will run inside this condition
@@ -76,7 +76,7 @@ function calculator(event) {
         } else if (lastUsedOperator !== 'none') {
             const total = getTotal(unFinishedTotal);
             forDisplay = [];
-            display(total);
+            updateMainScreen(total);
             unFinishedTotal.pop();
         }
         unFinishedTotal.push(pressedKey);
@@ -141,14 +141,14 @@ function calculator(event) {
         //if the array unFinishedTotal last element is an operator or doesn't have any operator
         if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
             forDisplay = [];
-            display(percentageOf);
+            updateMainScreen(percentageOf);
             forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
             unFinishedTotal = ['% of ', currentNumber.toString().replace(/[\-]/, '–')];
         } else if (unFinishedTotal.includes('%')) {
             percentageOf = eval(forDisplay.join('').replace(/[\–]/, '-')) / 100;
             const currentResult = forDisplay;
             forDisplay = [];
-            display(percentageOf);
+            updateMainScreen(percentageOf);
             unFinishedTotal = ['% of ', ...currentResult];
         } else {
             const previousSet = unFinishedTotal
@@ -189,7 +189,7 @@ function calculator(event) {
             lastNumber = forDisplay.join('') * 1;
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
-            display(total);
+            updateMainScreen(total);
             unFinishedTotal = [];
         } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
             currentResult = [...forDisplay].join('') * 1;
@@ -206,7 +206,7 @@ function calculator(event) {
             unFinishedTotal = [newResult];
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
-            display(total);
+            updateMainScreen(total);
             if (lastNumber < 0) {
                 const lastNumberWithNegativeSign = lastNumber.toString().replace(/[\-]/, '–');
                 unFinishedTotal = [currentResult.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')'];
@@ -224,7 +224,7 @@ function calculator(event) {
                 .replace(/[\–]/, '-'));
             const total = getTotal(unFinishedTotal).toString();
             forDisplay = [];
-            display(total);
+            updateMainScreen(total);
             unFinishedTotal = [];
         }
     } else if (pressedKey === 'c' || pressedKey === 'C') {
@@ -335,7 +335,7 @@ for (let i = 0; i < 20; i++) {
 };
 
 //DISPLAY FUNCTION
-function display(input) {
+function updateMainScreen(input) {
     const forDisplayFirstIndex = forDisplay[0];
     const forDisplayLength = forDisplay.length;
     if (number.test(input)) {
