@@ -1,6 +1,3 @@
-/*Note: I use guard clauses on some of the if else statement for oneliner code
-that needs to run down before the nested if else statement ends*/
-
 const calculatorScreen = document.querySelector('.input-value');
 const toBeEqualledScreen = document.querySelector('.to-be-equalled');
 const a = document.querySelectorAll('.ac');
@@ -125,7 +122,7 @@ function calculator(event) {
 
     if (clickEventis === 'on') { pressedKey = event; }
 
-    //decimal is added on this condition
+    //All numbers goes here including decimal
     if (number.test(pressedKey)) {
         if (equalSignWasPressed || percentageSwitch === 'on') {
             forDisplay = [];
@@ -225,6 +222,7 @@ function calculator(event) {
         endsWithOperator = '';
         equalSignWasPressed = false;
 
+        //if the array unFinishedTotal last element is an operator or doesn't have any operator
         if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
             forDisplay = [];
             display(percentageOf);
