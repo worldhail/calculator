@@ -186,6 +186,8 @@ function calculator(event) {
         if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
             const currentResult = forDisplay.toString().replace('-', '–').split('');
             forDisplay = currentResult;
+            unFinishedTotal = [...forDisplay];
+            lastUsedOperator = 'none';
         }
         if (forDisplay[0] === '–') {
             if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
