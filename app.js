@@ -27,20 +27,22 @@ window.addEventListener('keypress', (event) => {
         calculator(event);
     }
     event.preventDefault();
-    calculatorScreen.focus();
     return;
 });
 
-//DELETE FUNCTION WITH INPUT EVENT LISTENER
-calculatorScreen.addEventListener('input', (event) => {
-    deleteLastInput(event);
-    interactTheButton(event.inputType);
+//DELETE FUNCTION WITH KEYDOWN EVENT LISTENER
+window.addEventListener('keydown', (event) => {
+    const backspace = event.key;
+    if (backspace === 'Backspace') {
+        deleteLastInput(event);
+        interactTheButton(event.key);
+    }
 });
 
 //DELETE FUNCTION
 function deleteLastInput(throughEvent) {
     let onDisplay = [...forDisplay];
-    if (throughEvent.inputType === 'deleteContentBackward' || throughEvent === 'Del') {
+    if (throughEvent.key === 'Backspace' || throughEvent === 'Del') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (equalSignWasPressed || percentageSwitch === 'on') {
@@ -79,11 +81,6 @@ function deleteLastInput(throughEvent) {
     mainScreenLength = calculatorScreen.value.length;
     decreaseFontSize(mainScreenLength);
 };
-
-//ANYTHING THAT WILL BE CLICK, THE CALCULATOR MAIN SCREEN WILL GET FOCUS SO DELETE FUNCTION WOULD ALWAYS POINT OUT THE SCREEN
-window.addEventListener('click', () => {
-    calculatorScreen.focus();
-});
 
 //CLICK EVENT FUNCTION
 const buttons = document.querySelectorAll('button');
@@ -430,7 +427,7 @@ function interactTheButton(value) {
         '–': 'plus-minus-sign',
         'Enter': 'equal',
         'c': 'reset',
-        'deleteContentBackward': 'delete'
+        'Backspace': 'delete'
     };
 
     const button = document.querySelector(`.${pressedKey[value]}`);
@@ -452,7 +449,6 @@ function decreaseFontSize(inputLength) {
             .reverse()
             .findIndex(number => number !== '0');
         const lastGreaterZero = forDisplay.splice(forDisplay.length - greaterZeroIndex);
-        //const zero = forDisplay.splice(greaterZero + 1);
         forDisplay.pop();
         forDisplay = [...forDisplay, ...lastGreaterZero];
         calculatorScreen.value = forDisplay.join('');
