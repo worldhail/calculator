@@ -73,11 +73,11 @@ function deleteLastInput(throughEvent) {
                 forDisplay = [];
             }
         }
-        mainScreenValue(useRegularMinusSign(forDisplay));
+        calculatorScreen.value = useRegularMinusSign(forDisplay);
         smallScreenDisplay(unFinishedTotal);
     }
     if (forDisplay.length === 0) {
-        mainScreenValue('0');
+        calculatorScreen.value = '0';
     }
     mainScreenLength = calculatorScreen.value.length;
     decreaseFontSize(mainScreenLength);
@@ -212,7 +212,7 @@ function calculator(event) {
             unFinishedTotal = [...forDisplay];
         }
         const changedAltMinus = useRegularMinusSign(forDisplay);
-        mainScreenValue(changedAltMinus);
+        calculatorScreen.value = changedAltMinus;
 
         //percentage condition
     } else if (pressedKey === '%') {
@@ -259,7 +259,7 @@ function calculator(event) {
             const split = newResult.toString().replace('-', '–').split('');
             forDisplay = split;
             const changedNegativeSign = useRegularMinusSign(forDisplay);
-            mainScreenValue(changedNegativeSign);
+            calculatorScreen.value = changedNegativeSign;
         }
 
         //get total with equal sign or enter key
@@ -324,7 +324,8 @@ function calculator(event) {
         lastNumber = '';
         currentResult = '';
         equalSignWasPressed = false;
-        mainScreenValue('0');
+        stopper = 0;
+        calculatorScreen.value = '0';
         a[0].style.opacity = '1';
         a[1].style.position = 'static';
     }
@@ -358,7 +359,7 @@ function display(input) {
     }
     unFinishedTotal.push(input);
     const changedNegativeSign = useRegularMinusSign(forDisplay);
-    mainScreenValue(changedNegativeSign);
+    calculatorScreen.value = changedNegativeSign;
 }
 
 // DISPLAY FUNCTION FOR SMALL SCREEN WHICH TO BE TOTALLED
@@ -374,7 +375,8 @@ function smallScreenDisplay(array) {
 
 //GET THE INDEX OF LAST USED OPERATOR IN UNFINISH TOTAL ARRAY
 function getLastUsedOperatorIndex(array) {
-    const unFinishedTotalLastOperatorIndex = array.findLastIndex(usedOperator => operator.test(usedOperator));
+    //const unFinishedTotalLastOperatorIndex = array.findLastIndex(usedOperator => operator.test(usedOperator));
+    const unFinishedTotalLastOperatorIndex = array.lastIndexOf(lastUsedOperator);
     return unFinishedTotalLastOperatorIndex;
 }
 
@@ -439,36 +441,41 @@ function interactiveButton(value) {
 }
 
 //FONT SIZE REDUCTION FUNCTION
-let stopper = 0;
 function decreaseFontSize(inputLength) {
     let currentFontSize = getComputedStyle(calculatorScreen).fontSize.replace('px', '') * 1;
-    if (stopper === 2 && inputLength === 35) {
+    if (inputLength >= 35) {
         forDisplay.pop();
         forDisplay.push('0');
-        const greaterZero = forDisplay.findLastIndex(number => number !== '0');
-        const zero = forDisplay.splice(greaterZero + 1);
+        //const greaterZero = forDisplay.findLastIndex(number => number !== '0');
+        const greaterZeroIndex = forDisplay
+            .slice()
+            .reverse()
+            .findIndex(number => number !== '0');
+        const lastGreaterZero = forDisplay.splice(forDisplay.length - greaterZeroIndex);
+        //const zero = forDisplay.splice(greaterZero + 1);
         forDisplay.pop();
-        forDisplay = [...forDisplay, ...zero];
+        forDisplay = [...forDisplay, ...lastGreaterZero];
         calculatorScreen.value = forDisplay.join('');
         if (forDisplay.every(item => item === '0')) {
             forDisplay = [];
-            stopper = 0;
-            mainScreenValue('0');
+            calculatorScreen.value = '0';
             calculatorScreen.style.fontSize = '2.5rem';
         }
         unFinishedTotal = [...forDisplay];
         toBeEqualledScreen.value = unFinishedTotal.join('');
     } else if (inputLength > 11) {
         let difference = inputLength - 11;
-        for (let i = 4; i < difference; i++) {
+        const breakPoint1 = 4;
+        const breakPoint2 = 7;
+        const breakPoint3 = 9;
+        for (let i = breakPoint1; i < difference; i++) {
             difference--;
         }
-        for (let j = 7; j < difference; j++) {
+        for (let j = breakPoint2; j < difference; j++) {
             difference--;
         }
-        for (let k = 9; k < difference; k++) {
+        for (let k = breakPoint3; k < difference; k++) {
             difference -= 1;
-            stopper++;
         }
         const fontSizeReduction = difference * 3;
         const newFontSize = 40 - fontSizeReduction;
@@ -477,8 +484,3 @@ function decreaseFontSize(inputLength) {
         calculatorScreen.style.fontSize = '2.5rem';
     }
 };
-
-//RETURN CALCULATOR SCREEN VALUE
-function mainScreenValue(displayed) {
-    calculatorScreen.value = displayed;
-}
