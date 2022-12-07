@@ -30,88 +30,6 @@ window.addEventListener('keypress', (event) => {
     return;
 });
 
-//DELETE FUNCTION WITH KEYDOWN EVENT LISTENER
-window.addEventListener('keydown', (event) => {
-    const backspace = event.key;
-    if (backspace === 'Backspace') {
-        deleteLastInput(event);
-        interactTheButton(event.key);
-    }
-});
-
-//DELETE FUNCTION
-function deleteLastInput(throughEvent) {
-    let onDisplay = [...forDisplay];
-    if (throughEvent.key === 'Backspace' || throughEvent === 'Del') {
-        forDisplay.pop();
-        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-        if (equalSignWasPressed || percentageSwitch === 'on') {
-            forDisplay = onDisplay;
-        } else if (unFinishedTotal.slice(-1)[0] === ')') {
-            unFinishedTotal.splice(-2);
-            unFinishedTotal.push(')');
-
-            if (forDisplay[0] === '–' && forDisplay.length === 1) {
-                unFinishedTotal.splice(lastUsedOperatorIndex + 1);
-                forDisplay = [];
-            }
-
-        } else if (lastUsedOperatorIndex !== -1) {
-            const available2Delete = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
-            if (available2Delete.length === 0) {
-                forDisplay = onDisplay;
-            } else {
-                available2Delete.pop();
-                unFinishedTotal.push(...available2Delete);
-            }
-
-        } else {
-            unFinishedTotal.pop();
-            if (forDisplay[0] === '–' && forDisplay.length === 1) {
-                unFinishedTotal = [];
-                forDisplay = [];
-            }
-        }
-        calculatorScreen.value = useRegularMinusSign(forDisplay);
-        smallScreenDisplay(unFinishedTotal);
-    }
-    if (forDisplay.length === 0) {
-        calculatorScreen.value = '0';
-    }
-    mainScreenLength = calculatorScreen.value.length;
-    decreaseFontSize(mainScreenLength);
-};
-
-//CLICK EVENT FUNCTION
-const buttons = document.querySelectorAll('button');
-for (let i = 0; i < 20; i++) {
-    buttons[i].addEventListener('click', (event) => {
-        let target = event.target.textContent;
-
-        switch (target) {
-            case 'A':
-            case 'C':
-            case 'AC':
-                target = 'c';
-                break;
-            case '+/-':
-                target = '–';
-                break;
-            case 'x':
-                target = '*';
-                break;
-            case '÷':
-                target = '/';
-                break;
-            case 'Del':
-                deleteLastInput(target);
-                return;
-        };
-        clickEventis = 'on';
-        calculator(target);
-    });
-};
-
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
@@ -307,10 +225,6 @@ function calculator(event) {
             forDisplay = [];
             display(total);
             unFinishedTotal = [];
-            // smallScreenDisplay(unFinishedTotal);
-            // mainScreenLength = calculatorScreen.value.length;
-            // decreaseFontSize(mainScreenLength);
-            // return;
         }
     } else if (pressedKey === 'c' || pressedKey === 'C') {
         unFinishedTotal = [];
@@ -321,7 +235,6 @@ function calculator(event) {
         lastNumber = '';
         currentResult = '';
         equalSignWasPressed = false;
-        stopper = 0;
         calculatorScreen.value = '0';
         a[0].style.opacity = '1';
         a[1].style.position = 'static';
@@ -336,6 +249,88 @@ function calculator(event) {
     }
     decreaseFontSize(mainScreenLength);
     interactTheButton(event.key);
+};
+
+//DELETE FUNCTION WITH KEYDOWN EVENT LISTENER
+window.addEventListener('keydown', (event) => {
+    const backspace = event.key;
+    if (backspace === 'Backspace') {
+        deleteLastInput(event);
+        interactTheButton(event.key);
+    }
+});
+
+//DELETE FUNCTION
+function deleteLastInput(throughEvent) {
+    let onDisplay = [...forDisplay];
+    if (throughEvent.key === 'Backspace' || throughEvent === 'Del') {
+        forDisplay.pop();
+        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+        if (equalSignWasPressed || percentageSwitch === 'on') {
+            forDisplay = onDisplay;
+        } else if (unFinishedTotal.slice(-1)[0] === ')') {
+            unFinishedTotal.splice(-2);
+            unFinishedTotal.push(')');
+
+            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+                unFinishedTotal.splice(lastUsedOperatorIndex + 1);
+                forDisplay = [];
+            }
+
+        } else if (lastUsedOperatorIndex !== -1) {
+            const available2Delete = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
+            if (available2Delete.length === 0) {
+                forDisplay = onDisplay;
+            } else {
+                available2Delete.pop();
+                unFinishedTotal.push(...available2Delete);
+            }
+
+        } else {
+            unFinishedTotal.pop();
+            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+                unFinishedTotal = [];
+                forDisplay = [];
+            }
+        }
+        calculatorScreen.value = useRegularMinusSign(forDisplay);
+        smallScreenDisplay(unFinishedTotal);
+    }
+    if (forDisplay.length === 0) {
+        calculatorScreen.value = '0';
+    }
+    mainScreenLength = calculatorScreen.value.length;
+    decreaseFontSize(mainScreenLength);
+};
+
+//CLICK EVENT FUNCTION
+const buttons = document.querySelectorAll('button');
+for (let i = 0; i < 20; i++) {
+    buttons[i].addEventListener('click', (event) => {
+        let target = event.target.textContent;
+
+        switch (target) {
+            case 'A':
+            case 'C':
+            case 'AC':
+                target = 'c';
+                break;
+            case '+/-':
+                target = '–';
+                break;
+            case 'x':
+                target = '*';
+                break;
+            case '÷':
+                target = '/';
+                break;
+            case 'Del':
+                deleteLastInput(target);
+                return;
+        };
+        clickEventis = 'on';
+        calculator(target);
+    });
 };
 
 //DISPLAY FUNCTION
