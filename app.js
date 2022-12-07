@@ -422,6 +422,7 @@ function interactTheButton(value) {
         '–': 'plus-minus-sign',
         'Enter': 'equal',
         'c': 'reset',
+        'C': 'reset',
         'Backspace': 'delete'
     };
 
