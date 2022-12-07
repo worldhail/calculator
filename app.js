@@ -37,7 +37,7 @@ window.addEventListener('keypress', (event) => {
 //DELETE FUNCTION WITH INPUT EVENT LISTENER
 calculatorScreen.addEventListener('input', (event) => {
     deleteLastInput(event);
-    interactiveButton(event.inputType);
+    interactTheButton(event.inputType);
 });
 
 //DELETE FUNCTION
@@ -340,7 +340,7 @@ function calculator(event) {
         return;
     }
     decreaseFontSize(mainScreenLength);
-    interactiveButton(event.key);
+    interactTheButton(event.key);
 };
 
 //DISPLAY FUNCTION
@@ -409,7 +409,7 @@ function hideLetter(a) {
 }
 
 //PRESSED EFFECT FUNCTION
-function interactiveButton(value) {
+function interactTheButton(value) {
 
     const pressedKey = {
         '0': 'zero',
