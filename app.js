@@ -17,7 +17,7 @@ let mainScreenLength;
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', (event) => {
-    const allowedInput = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|[Enter]|[\\–]|[c]');
+    const allowedInput = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|[Enter]|[\\–]|[cC]');
     const cannotPrevented = ['e', 'r', 't', 'n', 'E'];
     if (cannotPrevented.includes(event.key)) {
         event.preventDefault();
@@ -312,7 +312,7 @@ function calculator(event) {
             // decreaseFontSize(mainScreenLength);
             // return;
         }
-    } else if (pressedKey === 'c') {
+    } else if (pressedKey === 'c' || pressedKey === 'C') {
         unFinishedTotal = [];
         lastUsedOperator = 'none';
         forDisplay = [];
