@@ -14,6 +14,7 @@ let equalSignWasPressed = false;
 let clickEventis = 'off';
 let lastUsedOperatorIndex;
 let mainScreenLength;
+let changedNegativeSign;
 
 //KEYPRESS EVENT LISTENER
 window.addEventListener('keypress', (event) => {
@@ -125,8 +126,8 @@ function calculator(event) {
             lastUsedOperator = 'none';
             unFinishedTotal = [...forDisplay];
         }
-        const changedAltMinus = useRegularMinusSign(forDisplay);
-        calculatorScreen.value = changedAltMinus;
+        changedNegativeSign = useRegularMinusSign(forDisplay);
+        calculatorScreen.value = changedNegativeSign;
 
         //percentage condition
     } else if (pressedKey === '%') {
@@ -173,7 +174,7 @@ function calculator(event) {
             unFinishedTotal.push(pressedKey);
             const split = newResult.toString().replace('-', '–').split('');
             forDisplay = split;
-            const changedNegativeSign = useRegularMinusSign(forDisplay);
+            changedNegativeSign = useRegularMinusSign(forDisplay);
             calculatorScreen.value = changedNegativeSign;
         }
 
@@ -350,7 +351,7 @@ function display(input) {
         forDisplay.push(input);
     }
     unFinishedTotal.push(input);
-    const changedNegativeSign = useRegularMinusSign(forDisplay);
+    changedNegativeSign = useRegularMinusSign(forDisplay);
     calculatorScreen.value = changedNegativeSign;
 }
 
