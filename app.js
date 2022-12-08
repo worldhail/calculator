@@ -237,6 +237,7 @@ function calculator(event) {
         a[1].style.position = 'static';
     } else if (pressedKey === 'Backspace') {
         deleteLastInput(pressedKey);
+        calculatorScreen.value = useRegularMinusSign(forDisplay);
     }
 
     updateSubScreen(unFinishedTotal);
@@ -283,14 +284,10 @@ function deleteLastInput(withDeleteKey) {
                 forDisplay = [];
             }
         }
-        calculatorScreen.value = useRegularMinusSign(forDisplay);
-        updateSubScreen(unFinishedTotal);
     }
     if (forDisplay.length === 0) {
         calculatorScreen.value = '0';
     }
-    mainScreenLength = calculatorScreen.value.length;
-    decreaseFontSize(mainScreenLength);
 };
 
 //CLICK EVENT FUNCTION
