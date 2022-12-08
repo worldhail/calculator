@@ -237,7 +237,11 @@ function calculator(event) {
         a[1].style.position = 'static';
     } else if (pressedKey === 'Backspace') {
         deleteLastInput(pressedKey);
-        calculatorScreen.value = useRegularMinusSign(forDisplay);
+        if (forDisplay.length === 0) {
+            calculatorScreen.value = '0';
+        } else {
+            calculatorScreen.value = useRegularMinusSign(forDisplay);
+        }
     }
 
     updateSubScreen(unFinishedTotal);
@@ -284,9 +288,6 @@ function deleteLastInput(withDeleteKey) {
                 forDisplay = [];
             }
         }
-    }
-    if (forDisplay.length === 0) {
-        calculatorScreen.value = '0';
     }
 };
 
