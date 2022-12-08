@@ -70,6 +70,58 @@ function calculate() {
         return total;
     }
 }
+
+//NEGATIVE SIGN FUNCTION
+function applyNegativeSign(negativeSign) {
+    if (equalSignWasPressed) {
+        forDisplay = forDisplay
+            .join('')
+            .replace(/[\-]/, '–')
+            .split('');
+        unFinishedTotal = [...forDisplay];
+        lastUsedOperator = 'none';
+        endsWithOperator = '';
+        equalSignWasPressed = false;
+    }
+    //unFinishedTotal array will reset once apply a negative sign on a current result
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+    const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
+    const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
+    if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
+        const currentResult = forDisplay
+            .toString()
+            .replace('-', '–')
+            .split('');
+        forDisplay = currentResult;
+        unFinishedTotal = [...forDisplay];
+        lastUsedOperator = 'none';
+    }
+    if (forDisplay[0] === '–') {
+        if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
+            unFinishedTotal.shift();
+        } else {
+            unFinishedTotalLastNumber.pop();
+        }
+        unFinishedTotalLastNumber.shift();
+        forDisplay.shift();
+    } else {
+        if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
+            unFinishedTotal.unshift(negativeSign);
+        } else {
+            unFinishedTotalLastNumber.unshift('(–');
+            unFinishedTotalLastNumber.push(')');
+        }
+        forDisplay.unshift(negativeSign);
+    }
+    unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
+
+    if (percentageSwitch === 'on') {
+        percentageSwitch = 'off';
+        lastUsedOperator = 'none';
+        unFinishedTotal = [...forDisplay];
+    }
+}
 //NEW
 
 //CALCULATOR FUNCTION
@@ -101,51 +153,8 @@ function calculator(event) {
 
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === '–') {
-        if (forDisplay.length === 0) { return; }
-        if (equalSignWasPressed) {
-            forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
-            unFinishedTotal = [...forDisplay];
-            lastUsedOperator = 'none';
-            endsWithOperator = '';
-            equalSignWasPressed = false;
-        }
-        //unFinishedTotal array will reset once apply a negative sign on a current result
-        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-        const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
-        const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
-        if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
-            const currentResult = forDisplay.toString().replace('-', '–').split('');
-            forDisplay = currentResult;
-            unFinishedTotal = [...forDisplay];
-            lastUsedOperator = 'none';
-        }
-        if (forDisplay[0] === '–') {
-            if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
-                unFinishedTotal.shift();
-            } else {
-                unFinishedTotalLastNumber.pop();
-            }
-            unFinishedTotalLastNumber.shift();
-            forDisplay.shift();
-        } else {
-            if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
-                unFinishedTotal.unshift(pressedKey);
-            } else {
-                unFinishedTotalLastNumber.unshift('(–');
-                unFinishedTotalLastNumber.push(')');
-            }
-            forDisplay.unshift(pressedKey);
-        }
-        unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
-
-        if (percentageSwitch === 'on') {
-            percentageSwitch = 'off';
-            lastUsedOperator = 'none';
-            unFinishedTotal = [...forDisplay];
-        }
-        changedNegativeSign = useRegularMinusSign(forDisplay);
-        calculatorScreen.value = changedNegativeSign;
+        applyNegativeSign(pressedKey);
+        updateMainScreen(forDisplay);
 
         //percentage condition
     } else if (pressedKey === '%') {
@@ -362,7 +371,9 @@ function updateMainScreen(input) {
         }
         forDisplay.push(input);
     }
-    unFinishedTotal.push(input);
+    if (typeof input !== 'object') {
+        unFinishedTotal.push(input);
+    }
     changedNegativeSign = useRegularMinusSign(forDisplay);
     calculatorScreen.value = changedNegativeSign;
 }
