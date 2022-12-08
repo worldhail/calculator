@@ -235,6 +235,8 @@ function calculator(event) {
         calculatorScreen.value = '0';
         a[0].style.opacity = '1';
         a[1].style.position = 'static';
+    } else if (pressedKey === 'Backspace') {
+        deleteLastInput(pressedKey);
     }
 
     updateSubScreen(unFinishedTotal);
@@ -249,9 +251,9 @@ function calculator(event) {
 };
 
 //DELETE FUNCTION
-function deleteLastInput(throughEvent) {
+function deleteLastInput(withDeleteKey) {
     let onDisplay = [...forDisplay];
-    if (throughEvent.key === 'Backspace' || throughEvent === 'Del') {
+    if (withDeleteKey === 'Backspace') {
         forDisplay.pop();
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (equalSignWasPressed || percentageSwitch === 'on') {
@@ -313,6 +315,7 @@ for (let i = 0; i < 20; i++) {
                 target = '/';
                 break;
             case 'Del':
+                target = 'Backspace';
                 deleteLastInput(target);
                 return;
         };
