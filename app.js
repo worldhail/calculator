@@ -16,19 +16,15 @@ let lastUsedOperatorIndex;
 let mainScreenLength;
 let changedNegativeSign;
 
-//KEYPRESS EVENT LISTENER
-window.addEventListener('keypress', (event) => {
-    const allowedInput = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|[Enter]|[\\–]|[cC]');
-    const cannotPrevented = ['e', 'r', 't', 'n', 'E'];
-    if (cannotPrevented.includes(event.key)) {
-        event.preventDefault();
+//KEYUP EVENT FUNCTION
+window.addEventListener('keyup', (event) => {
+    const allowedKeys = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|Enter|[\\–]|[cC]|Backspace');
+    const cannotPrevented = 'CapsLock';
+    if (event.key === cannotPrevented) {
         return;
-    }
-    if (event.key.match(allowedInput)) {
+    } else if (allowedKeys.test(event.key)) {
         calculator(event);
     }
-    event.preventDefault();
-    return;
 });
 
 //CALCULATOR FUNCTION
@@ -251,15 +247,6 @@ function calculator(event) {
     decreaseFontSize(mainScreenLength);
     interactTheButton(event.key);
 };
-
-//DELETE FUNCTION WITH KEYDOWN EVENT LISTENER
-window.addEventListener('keydown', (event) => {
-    const backspace = event.key;
-    if (backspace === 'Backspace') {
-        deleteLastInput(event);
-        interactTheButton(event.key);
-    }
-});
 
 //DELETE FUNCTION
 function deleteLastInput(throughEvent) {
