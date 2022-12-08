@@ -15,6 +15,7 @@ let clickEventis = 'off';
 let lastUsedOperatorIndex;
 let mainScreenLength;
 let changedNegativeSign;
+let unFinishedTotalLastElement;
 
 //KEYUP EVENT FUNCTION
 window.addEventListener('keyup', (event) => {
@@ -27,52 +28,72 @@ window.addEventListener('keyup', (event) => {
     }
 });
 
+//NEW
+//TAKE NUMBER FUNCTION
+function takeNumber(input) {
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    if (equalSignWasPressed || percentageSwitch === 'on') {
+        forDisplay = [];
+        lastUsedOperator = 'none';
+        endsWithOperator = '';
+        equalSignWasPressed = false;
+        percentageSwitch = 'off';
+        unFinishedTotal = [];
+        unFinishedTotalLastElement = '';
+    }
+    if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
+    if (unFinishedTotalLastElement === ')') {
+        forDisplay.push(input);
+        unFinishedTotal.pop();
+        unFinishedTotal.push(input);
+        return ')';
+    }
+    return input;
+}
+
+//OPERATOR FUNCTION
+function calculate() {
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    if (percentageSwitch === 'on') {
+        percentageSwitch = 'off';
+        unFinishedTotal = [...forDisplay]
+    } else if (operator.test(unFinishedTotalLastElement)) {
+        unFinishedTotal.pop();
+    } else if (equalSignWasPressed) {
+        lastUsedOperator = 'none';
+        endsWithOperator = '';
+        equalSignWasPressed = false;
+        unFinishedTotal = [...forDisplay]
+    } else if (lastUsedOperator !== 'none') {
+        const total = getTotal(unFinishedTotal);
+        forDisplay = [];
+        return total;
+    }
+}
+//NEW
+
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
-    let unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
 
     if (clickEventis === 'on') { pressedKey = event; }
 
     //All numbers goes here including decimal
     if (number.test(pressedKey)) {
-        if (equalSignWasPressed || percentageSwitch === 'on') {
-            forDisplay = [];
-            lastUsedOperator = 'none';
-            endsWithOperator = '';
-            equalSignWasPressed = false;
-            percentageSwitch = 'off';
-            unFinishedTotal = [];
-            unFinishedTotalLastElement = '';
-        } else if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
-        if (unFinishedTotalLastElement === ')') {
-            forDisplay.push(pressedKey);
-            unFinishedTotal.pop();
-            unFinishedTotal.push(pressedKey);
-            pressedKey = ')';
-        }
-        updateMainScreen(pressedKey);
+        const newInput = takeNumber(pressedKey);
+        updateMainScreen(newInput);
         hideLetter(a);
 
         //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
-        if (percentageSwitch === 'on') {
-            percentageSwitch = 'off';
-            unFinishedTotal = [...forDisplay]
-        } else if (operator.test(unFinishedTotalLastElement)) {
-            unFinishedTotal.pop();
-        } else if (forDisplay.length === 0) {
+        if (forDisplay.length === 0) {
             return;
-        } else if (equalSignWasPressed) {
-            lastUsedOperator = 'none';
-            endsWithOperator = '';
-            equalSignWasPressed = false;
-            unFinishedTotal = [...forDisplay]
-        } else if (lastUsedOperator !== 'none') {
-            const total = getTotal(unFinishedTotal);
-            forDisplay = [];
-            updateMainScreen(total);
+        }
+
+        const newTotal = calculate();
+        if (newTotal !== undefined) {
+            updateMainScreen(newTotal);
             unFinishedTotal.pop();
         }
         unFinishedTotal.push(pressedKey);
@@ -89,6 +110,7 @@ function calculator(event) {
             equalSignWasPressed = false;
         }
         //unFinishedTotal array will reset once apply a negative sign on a current result
+        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
         const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
@@ -135,6 +157,7 @@ function calculator(event) {
         equalSignWasPressed = false;
 
         //if the array unFinishedTotal last element is an operator or doesn't have any operator
+        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
         if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
             forDisplay = [];
             updateMainScreen(percentageOf);
@@ -179,6 +202,7 @@ function calculator(event) {
         equalSignWasPressed = true;
 
         //avoiding unFinishedTotalLastElement not to return true when it's value is like '2.5425123512e+13'
+        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
         if (operator.test(unFinishedTotalLastElement) && !unFinishedTotalLastElement.includes('e')) {
             unFinishedTotal.pop();
             endsWithOperator = 'yes';
