@@ -46,7 +46,7 @@ function takeNumber(input) {
         forDisplay.push(input);
         unFinishedTotal.pop();
         unFinishedTotal.push(input);
-        return ')';
+        input = ')';
     }
     return input;
 }
@@ -135,6 +135,7 @@ function calculator(event) {
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
         const newInput = takeNumber(pressedKey);
         updateMainScreen(newInput);
+        unFinishedTotal.push(newInput);
         hideLetter(a);
 
         //operator keys will run inside this condition
@@ -359,7 +360,7 @@ for (let i = 0; i < 20; i++) {
 function updateMainScreen(input) {
     const forDisplayFirstIndex = forDisplay[0];
     const forDisplayLength = forDisplay.length;
-    if (number.test(input)) {
+    if (input !== ')') {
         if (input === '.' && forDisplayLength === 0) {
             forDisplay.push(0);
             unFinishedTotal.push(0);
@@ -370,9 +371,6 @@ function updateMainScreen(input) {
             }
         }
         forDisplay.push(input);
-    }
-    if (typeof input !== 'object') {
-        unFinishedTotal.push(input);
     }
     changedNegativeSign = useRegularMinusSign(forDisplay);
     calculatorScreen.value = changedNegativeSign;
