@@ -29,10 +29,9 @@ window.addEventListener('keyup', (event) => {
 });
 
 //NEW
-//TAKE NUMBER FUNCTION
-function takeNumber(input) {
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    if (equalSignWasPressed || percentageSwitch === 'on') {
+//RESET VARIABLES FUNCTION
+function switchOffVariables(inputType) {
+    if (inputType === 'number') {
         forDisplay = [];
         lastUsedOperator = 'none';
         endsWithOperator = '';
@@ -40,122 +39,146 @@ function takeNumber(input) {
         percentageSwitch = 'off';
         unFinishedTotal = [];
         unFinishedTotalLastElement = '';
+    } else if (inputType === 'operator') {
+        if (percentageSwitch === 'on') {
+            percentageSwitch = 'off';
+        } else if (equalSignWasPressed) {
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            equalSignWasPressed = false;
+        }
+        unFinishedTotal = [...forDisplay]
+    } else if (inputType === 'negativeSign') {
+        if (equalSignWasPressed) {
+            forDisplay = forDisplay
+                .join('')
+                .replace(/[\-]/, '–')
+                .split('');
+            unFinishedTotal = [...forDisplay];
+            lastUsedOperator = 'none';
+            endsWithOperator = '';
+            equalSignWasPressed = false;
+        } else if (percentageSwitch === 'on') {
+            percentageSwitch = 'off';
+            lastUsedOperator = 'none';
+            unFinishedTotal = [...forDisplay];
+        }
     }
+}
+
+//TAKE NUMBER FUNCTION
+function takeNumber(input) {
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
     if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
-    if (unFinishedTotalLastElement === ')') {
+
+    const forDisplayFirstIndex = forDisplay[0];
+    const forDisplayLength = forDisplay.length;
+    if (input === '.' && forDisplayLength === 0) {
+        forDisplay.push(0);
+        unFinishedTotal.push(0);
+    } else if (forDisplayFirstIndex === '0' && forDisplayLength === 1) {
+        if (input !== '.') {
+            forDisplay.pop();
+            unFinishedTotal.pop();
+        }
+    } else if (unFinishedTotalLastElement === ')') {
+        unFinishedTotal.pop();
+        unFinishedTotal.push(input, ')');
         forDisplay.push(input);
-        unFinishedTotal.pop();
-        unFinishedTotal.push(input);
-        input = ')';
+        return;
     }
-    return input;
+    forDisplay.push(input);
+    unFinishedTotal.push(input);
 }
 
-//OPERATOR FUNCTION
-function calculate() {
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    if (percentageSwitch === 'on') {
-        percentageSwitch = 'off';
-        unFinishedTotal = [...forDisplay]
-    } else if (operator.test(unFinishedTotalLastElement)) {
-        unFinishedTotal.pop();
-    } else if (equalSignWasPressed) {
-        lastUsedOperator = 'none';
-        endsWithOperator = '';
-        equalSignWasPressed = false;
-        unFinishedTotal = [...forDisplay]
-    } else if (lastUsedOperator !== 'none') {
-        const total = getTotal(unFinishedTotal);
-        forDisplay = [];
-        return total;
-    }
+//MAKE CURRENT DISPLAY AS NEW INPUT WHEN THE NUMBER IS FROM PREVIOUS OPERATION
+function makePreviousTotalAsNewInput(displayed) {
+    const splitNewInput = displayed
+        .join('')
+        .replace('-', '–') /* to recognize as negative sign and not an operator(minus) */
+        .split('');
+    forDisplay = splitNewInput;
+    unFinishedTotal = [...forDisplay];
+    lastUsedOperator = 'none';
 }
 
-//NEGATIVE SIGN FUNCTION
-function applyNegativeSign(negativeSign) {
-    if (equalSignWasPressed) {
-        forDisplay = forDisplay
-            .join('')
-            .replace(/[\-]/, '–')
-            .split('');
-        unFinishedTotal = [...forDisplay];
-        lastUsedOperator = 'none';
-        endsWithOperator = '';
-        equalSignWasPressed = false;
-    }
-    //unFinishedTotal array will reset once apply a negative sign on a current result
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+//ADD NEGATIVE SIGN FUNCTION
+function addNegativeSign(negativeSign) {
     lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
     const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
-    const numberOfUsedOperator = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
-    if (numberOfUsedOperator > 1 && operator.test(unFinishedTotalLastElement)) {
-        const currentResult = forDisplay
-            .toString()
-            .replace('-', '–')
-            .split('');
-        forDisplay = currentResult;
-        unFinishedTotal = [...forDisplay];
-        lastUsedOperator = 'none';
-    }
-    if (forDisplay[0] === '–') {
-        if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
-            unFinishedTotal.shift();
-        } else {
-            unFinishedTotalLastNumber.pop();
-        }
-        unFinishedTotalLastNumber.shift();
-        forDisplay.shift();
+    if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
+        unFinishedTotal.unshift(negativeSign);
     } else {
-        if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
-            unFinishedTotal.unshift(negativeSign);
-        } else {
-            unFinishedTotalLastNumber.unshift('(–');
-            unFinishedTotalLastNumber.push(')');
-        }
-        forDisplay.unshift(negativeSign);
+        unFinishedTotalLastNumber.unshift('(–');
+        unFinishedTotalLastNumber.push(')');
     }
-    unFinishedTotal = unFinishedTotal.concat(unFinishedTotalLastNumber);
+    forDisplay.unshift(negativeSign);
+    return unFinishedTotalLastNumber;
+}
 
-    if (percentageSwitch === 'on') {
-        percentageSwitch = 'off';
-        lastUsedOperator = 'none';
-        unFinishedTotal = [...forDisplay];
+//REMOVE NEGATIVE SIGN FUNCTION
+function removeNegativeSign() {
+    lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+    const unFinishedTotalLastNumber = unFinishedTotal.splice(lastUsedOperatorIndex + 1);
+    if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
+        unFinishedTotal.shift();
+    } else {
+        unFinishedTotalLastNumber.pop();
     }
+    forDisplay.shift();
+    unFinishedTotalLastNumber.shift();
+    return unFinishedTotalLastNumber;
 }
 //NEW
 
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
+    const [negativeSign, percent] = ['–', '%'];
 
     if (clickEventis === 'on') { pressedKey = event; }
 
     //All numbers goes here including decimal
     if (number.test(pressedKey)) {
         if (forDisplay.includes('.') && pressedKey === '.') { return; }
-        const newInput = takeNumber(pressedKey);
-        updateMainScreen(newInput);
-        unFinishedTotal.push(newInput);
+        if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('number'); }
+        takeNumber(pressedKey);
+        updateMainScreen(forDisplay);
         hideLetter(a);
 
         //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
-        if (forDisplay.length === 0) {
-            return;
-        }
+        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+        if (forDisplay.length === 0) { return; }
+        if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('operator'); }
+        if (operator.test(unFinishedTotalLastElement)) { unFinishedTotal.pop(); }
+        if (lastUsedOperator.match(operator)) {
+            forDisplay = [getTotal(unFinishedTotal)];
 
-        const newTotal = calculate();
-        if (newTotal !== undefined) {
-            updateMainScreen(newTotal);
-            unFinishedTotal.pop();
+            updateMainScreen(forDisplay);
         }
         unFinishedTotal.push(pressedKey);
         lastUsedOperator = pressedKey;
 
         //for numbers that needed a negative sign (alt-minus)
-    } else if (pressedKey === '–') {
-        applyNegativeSign(pressedKey);
+    } else if (pressedKey === negativeSign) {
+        let newNumber;
+        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+        const operatorCount = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
+        if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('negativeSign') };
+
+        //if current number on main screen is a total number from previous operation,
+        //then it will be a new input if negative sign is removed/applied.
+        if (operator.test(unFinishedTotalLastElement) && operatorCount > 1) {
+            makePreviousTotalAsNewInput(forDisplay);
+        }
+        if (forDisplay[0] === negativeSign) {
+            newNumber = removeNegativeSign();
+        } else {
+            newNumber = addNegativeSign(pressedKey);
+        }
         updateMainScreen(forDisplay);
+        unFinishedTotal.push(...newNumber);
 
         //percentage condition
     } else if (pressedKey === '%') {
@@ -357,22 +380,8 @@ for (let i = 0; i < 20; i++) {
 };
 
 //DISPLAY FUNCTION
-function updateMainScreen(input) {
-    const forDisplayFirstIndex = forDisplay[0];
-    const forDisplayLength = forDisplay.length;
-    if (input !== ')') {
-        if (input === '.' && forDisplayLength === 0) {
-            forDisplay.push(0);
-            unFinishedTotal.push(0);
-        } else if (forDisplayFirstIndex === '0' && forDisplayLength === 1) {
-            if (input !== '.') {
-                forDisplay.pop();
-                unFinishedTotal.pop();
-            }
-        }
-        forDisplay.push(input);
-    }
-    changedNegativeSign = useRegularMinusSign(forDisplay);
+function updateMainScreen(inputs) {
+    changedNegativeSign = useRegularMinusSign(inputs);
     calculatorScreen.value = changedNegativeSign;
 }
 
@@ -402,8 +411,8 @@ function getTotal(unFinishedTotalArray) {
 }
 
 //REPLACE ALT-MINUS WITH REGULAR MINUS FUNCTION
-function useRegularMinusSign(toDisplay) {
-    const combinedPressedKeys = toDisplay
+function useRegularMinusSign(whenNegativeIsPresent) {
+    const combinedPressedKeys = whenNegativeIsPresent
         .join('')
         .replace(/[\–]/g, '-');
     return combinedPressedKeys;
