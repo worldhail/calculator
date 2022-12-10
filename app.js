@@ -8,8 +8,8 @@ let lastUsedOperator = 'none';
 let forDisplay = [];
 let percentageSwitch = 'off';
 let endsWithOperator = '';
-let lastNumber = '';
-let currentResult = '';
+let reservedLastNumber = '';
+let currentTotal = '';
 let equalSignWasPressed = false;
 let clickEventis = 'off';
 let lastUsedOperatorIndex;
@@ -174,12 +174,53 @@ function getPercentage(displayedNumber) {
             .split('');
     }
 }
+
+//GET OVERALL TOTAL FUNCTION
+function getOverallTotal(overallTotal) {
+    //avoiding unFinishedTotalLastElement not to return true when it's value is like '2.5425123512e+13'(considered as last element)
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    if (operator.test(unFinishedTotalLastElement) && !unFinishedTotalLastElement.includes('e')) {
+        unFinishedTotal.pop();
+        endsWithOperator = 'yes';
+        reservedLastNumber = overallTotal;
+        overallTotal = getTotal(unFinishedTotal);
+        unFinishedTotal = [];
+    } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
+        currentTotal = overallTotal;
+
+        let newTotal = lastUsedOperator === '+' ? currentTotal + reservedLastNumber
+            : lastUsedOperator === '-' ? currentTotal - reservedLastNumber
+                : lastUsedOperator === '*' ? currentTotal * reservedLastNumber
+                    : currentTotal / reservedLastNumber;
+
+        unFinishedTotal = [newTotal];
+        overallTotal = getTotal(unFinishedTotal);
+
+        const lastNumberWithNegativeSign = reservedLastNumber.toString().replace(/[\-]/, '–');
+        unFinishedTotal = reservedLastNumber < 0
+            ? [currentTotal.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')']
+            : [currentTotal.toString(), lastUsedOperator, reservedLastNumber.toString()];
+
+    } else if (lastUsedOperator === 'none' || percentageSwitch === 'on') {
+        unFinishedTotal = [];
+    } else {
+        endsWithOperator = 'no';
+        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+        reservedLastNumber = eval(unFinishedTotal
+            .slice(lastUsedOperatorIndex + 1)
+            .join('')
+            .replace(/[\–]/, '-'));
+        overallTotal = getTotal(unFinishedTotal)
+        unFinishedTotal = [];
+    }
+    return overallTotal;
+}
 //NEW
 
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
-    const [negativeSign, percent] = ['–', '%'];
+    const [negativeSign, percent, equal] = ['–', '%', '='];
 
     if (clickEventis === 'on') { pressedKey = event; }
 
@@ -230,66 +271,24 @@ function calculator(event) {
 
         getPercentage(currentDisplayedNumber);
         updateMainScreen(forDisplay);
-        
 
         //get total with equal sign or enter key
-    } else if (pressedKey === '=' || pressedKey === 'Enter') {
+    } else if (pressedKey === equal || pressedKey === 'Enter') {
         equalSignWasPressed = true;
-
-        //avoiding unFinishedTotalLastElement not to return true when it's value is like '2.5425123512e+13'
-        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-        if (operator.test(unFinishedTotalLastElement) && !unFinishedTotalLastElement.includes('e')) {
-            unFinishedTotal.pop();
-            endsWithOperator = 'yes';
-            lastNumber = forDisplay.join('') * 1;
-            const total = getTotal(unFinishedTotal).toString();
-            forDisplay = [];
-            updateMainScreen(total);
-            unFinishedTotal = [];
-        } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
-            currentResult = [...forDisplay].join('') * 1;
-            let newResult = '';
-            if (lastUsedOperator === '+') {
-                newResult = currentResult + lastNumber;
-            } else if (lastUsedOperator === '-') {
-                newResult = currentResult - lastNumber;
-            } else if (lastUsedOperator === '*') {
-                newResult = currentResult * lastNumber;
-            } else if (lastUsedOperator === '/') {
-                newResult = currentResult / lastNumber;
-            }
-            unFinishedTotal = [newResult];
-            const total = getTotal(unFinishedTotal).toString();
-            forDisplay = [];
-            updateMainScreen(total);
-            if (lastNumber < 0) {
-                const lastNumberWithNegativeSign = lastNumber.toString().replace(/[\-]/, '–');
-                unFinishedTotal = [currentResult.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')'];
-            } else {
-                unFinishedTotal = [currentResult.toString(), lastUsedOperator, lastNumber.toString()];
-            }
-        } else if (lastUsedOperator === 'none' || percentageSwitch === 'on') {
-            unFinishedTotal = [];
-        } else {
-            endsWithOperator = 'no';
-            lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-            lastNumber = eval(unFinishedTotal
-                .slice(lastUsedOperatorIndex + 1)
-                .join('')
-                .replace(/[\–]/, '-'));
-            const total = getTotal(unFinishedTotal).toString();
-            forDisplay = [];
-            updateMainScreen(total);
-            unFinishedTotal = [];
-        }
+        const newOverallTotal = getOverallTotal(forDisplay
+            .join('') * 1)
+            .toString()
+            .split('');
+        forDisplay = newOverallTotal;
+        updateMainScreen(newOverallTotal);
     } else if (pressedKey === 'c' || pressedKey === 'C') {
         unFinishedTotal = [];
         lastUsedOperator = 'none';
         forDisplay = [];
         percentageSwitch = 'off';
         endsWithOperator = '';
-        lastNumber = '';
-        currentResult = '';
+        reservedLastNumber = '';
+        currentTotal = '';
         equalSignWasPressed = false;
         calculatorScreen.value = '0';
         a[0].style.opacity = '1';
