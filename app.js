@@ -280,6 +280,7 @@ function calculator(event) {
 
         //percentage condition
     } else if (pressedKey === percent) {
+        if (forDisplay.length === 0) { return; }
         const currentDisplayedNumber = calculatorScreen.value * 1;
         equalSignWasPressed = false;
         percentageSwitch = 'on';
