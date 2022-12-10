@@ -129,6 +129,51 @@ function removeNegativeSign() {
     unFinishedTotalLastNumber.shift();
     return unFinishedTotalLastNumber;
 }
+
+//GET PERCENTAGE FUNCTION
+function getPercentage(displayedNumber) {
+    lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
+    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    let percentage = displayedNumber / 100;
+
+    //if the array unFinishedTotal last element is an operator or doesn't have any operator
+    if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
+        forDisplay = percentage
+            .toString()
+            .replace(/[\-]/, '–')
+            .split('');
+        unFinishedTotal = ['% of ', displayedNumber.toString().replace(/[\-]/, '–')];
+    } else if (unFinishedTotal.includes('%')) {
+        forDisplay = [...percentage.toString().replace(/[\-]/, '–')];
+        unFinishedTotal = ['% of ', displayedNumber];
+    } else {
+        //get percentage with a number after an operator
+        const previousSetBeforeLastOperator = unFinishedTotal.slice(0, lastUsedOperatorIndex);
+        const previousSetTotal = getTotal(previousSetBeforeLastOperator);
+        if (percentage < 0) { percentage = `(${percentage})`; }
+        if (unFinishedTotalLastElement === ')') {
+            unFinishedTotal.pop();
+            unFinishedTotal.push('%', ')');
+        } else {
+            unFinishedTotal.push('%');
+        }
+
+        //percentage of currentDisplay multiplied by the previous set result,
+        //then find the last operatorand to calculate the percentage from previous set.
+        let getPercentageFromPreviousSet = eval(`${percentage} * ${previousSetTotal}`);
+        if (lastUsedOperator === '+') {
+            getPercentageFromPreviousSet = previousSetTotal + getPercentageFromPreviousSet;
+        } else if (lastUsedOperator === '-') {
+            getPercentageFromPreviousSet = previousSetTotal - getPercentageFromPreviousSet;
+        } else if (lastUsedOperator === '/') {
+            getPercentageFromPreviousSet = eval(`${previousSetTotal} / ${percentage}`);
+        }
+        forDisplay = getPercentageFromPreviousSet
+            .toString()
+            .replace('-', '–')
+            .split('');
+    }
+}
 //NEW
 
 //CALCULATOR FUNCTION
@@ -162,7 +207,6 @@ function calculator(event) {
 
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === negativeSign) {
-        let newNumber;
         unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
         const operatorCount = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('negativeSign') };
@@ -172,63 +216,21 @@ function calculator(event) {
         if (operator.test(unFinishedTotalLastElement) && operatorCount > 1) {
             makePreviousTotalAsNewInput(forDisplay);
         }
-        if (forDisplay[0] === negativeSign) {
-            newNumber = removeNegativeSign();
-        } else {
-            newNumber = addNegativeSign(pressedKey);
-        }
+
+        let newNumber = forDisplay[0] === negativeSign ? removeNegativeSign() : addNegativeSign(pressedKey);
         updateMainScreen(forDisplay);
         unFinishedTotal.push(...newNumber);
 
         //percentage condition
-    } else if (pressedKey === '%') {
-        percentageSwitch = 'on';
-        const currentNumber = calculatorScreen.value * 1;
-        let percentageOf = currentNumber / 100;
-        lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-        endsWithOperator = '';
+    } else if (pressedKey === percent) {
+        const currentDisplayedNumber = calculatorScreen.value * 1;
         equalSignWasPressed = false;
+        percentageSwitch = 'on';
+        endsWithOperator = '';
 
-        //if the array unFinishedTotal last element is an operator or doesn't have any operator
-        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-        if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
-            forDisplay = [];
-            updateMainScreen(percentageOf);
-            forDisplay = forDisplay.join('').replace(/[\-]/, '–').split('');
-            unFinishedTotal = ['% of ', currentNumber.toString().replace(/[\-]/, '–')];
-        } else if (unFinishedTotal.includes('%')) {
-            percentageOf = eval(forDisplay.join('').replace(/[\–]/, '-')) / 100;
-            const currentResult = forDisplay;
-            forDisplay = [];
-            updateMainScreen(percentageOf);
-            unFinishedTotal = ['% of ', ...currentResult];
-        } else {
-            const previousSet = unFinishedTotal
-                .slice(0, lastUsedOperatorIndex)
-                .join('')
-                .replace(/[\–]/, '-');
-            const previousResult = eval(previousSet);
-            if (percentageOf < 0) { percentageOf = `(${percentageOf})`; }
-            if (unFinishedTotalLastElement === ')') {
-                unFinishedTotal.pop();
-                unFinishedTotal.push(pressedKey);
-                pressedKey = ')';
-            }
-
-            let newResult = eval(`${percentageOf} * ${previousResult}`);
-            if (lastUsedOperator === '+') {
-                newResult = previousResult + newResult;
-            } else if (lastUsedOperator === '-') {
-                newResult = previousResult - newResult;
-            } else if (lastUsedOperator === '/') {
-                newResult = eval(`${previousResult} / ${percentageOf}`);
-            }
-            unFinishedTotal.push(pressedKey);
-            const split = newResult.toString().replace('-', '–').split('');
-            forDisplay = split;
-            changedNegativeSign = useRegularMinusSign(forDisplay);
-            calculatorScreen.value = changedNegativeSign;
-        }
+        getPercentage(currentDisplayedNumber);
+        updateMainScreen(forDisplay);
+        
 
         //get total with equal sign or enter key
     } else if (pressedKey === '=' || pressedKey === 'Enter') {
