@@ -403,10 +403,10 @@ function updateMainScreen(inputs) {
 
 // DISPLAY FUNCTION FOR SMALL SCREEN WHICH TO BE TOTALLED
 function updateSubScreen(array) {
-    const operatorOutput = { '–': '-', '*': 'x', '/': '÷' };
+    const operatorOutput = { '+': ' ＋ ', '–': '-', '*': ' × ', '/': ' ÷ ', '-': ' ﹣ ' };
     const pressedKeys = array
         .join('')
-        .replace(/[\–]|[\*]|[\/]/g, (values) => {
+        .replace(/[\–]|[\*]|[\/]|[\+]|[\-]/g, (values) => {
             return operatorOutput[values]
         });
     toBeEqualledScreen.value = pressedKeys;
