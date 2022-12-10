@@ -484,8 +484,7 @@ function decreaseFontSize(inputLength) {
         const lastGreaterZero = forDisplay.splice(forDisplay.length - greaterZeroIndex);
         forDisplay.pop();
         forDisplay = [...forDisplay, ...lastGreaterZero];
-        changedNegativeSign = useRegularMinusSign(forDisplay);
-        calculatorScreen.value = changedNegativeSign;
+        updateMainScreen(forDisplay)
         if (forDisplay.every(item => item === '0')) {
             forDisplay = [];
             calculatorScreen.value = '0';
