@@ -16,6 +16,9 @@ let lastUsedOperatorIndex;
 let mainScreenLength;
 let changedNegativeSign;
 let unFinishedTotalLastElement;
+let firstIndex = 0;
+const [negativeSign, percent, equal, decimal, openParenthesis, closeParenthesis, minus] = ['–', '%', '=', '.', '(', ')', '-'];
+const [addition, subtraction, multiplication, division] = ['+', '-', '*', '/'];
 
 //KEYUP EVENT FUNCTION
 window.addEventListener('keyup', (event) => {
@@ -71,19 +74,17 @@ function takeNumber(input) {
     unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
     if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
 
-    const forDisplayFirstIndex = forDisplay[0];
-    const forDisplayLength = forDisplay.length;
-    if (input === '.' && forDisplayLength === 0) {
+    if (input === decimal && forDisplay.length === 0) {
         forDisplay.push(0);
         unFinishedTotal.push(0);
-    } else if (forDisplayFirstIndex === '0' && forDisplayLength === 1) {
-        if (input !== '.') {
+    } else if (forDisplay[ firstIndex ] === '0' && forDisplay.length === 1) {
+        if (input !== decimal) {
             forDisplay.pop();
             unFinishedTotal.pop();
         }
-    } else if (unFinishedTotalLastElement === ')') {
+    } else if (unFinishedTotalLastElement === closeParenthesis) {
         unFinishedTotal.pop();
-        unFinishedTotal.push(input, ')');
+        unFinishedTotal.push(input, closeParenthesis);
         forDisplay.push(input);
         return;
     }
@@ -92,10 +93,10 @@ function takeNumber(input) {
 }
 
 //MAKE CURRENT DISPLAY AS NEW INPUT WHEN THE NUMBER IS FROM PREVIOUS OPERATION
-function makePreviousTotalAsNewInput(displayed) {
-    const splitNewInput = displayed
+function makePreviousTotalAsNewInput(previousTotal) {
+    const splitNewInput = previousTotal
         .join('')
-        .replace('-', '–') /* to recognize as negative sign and not an operator(minus) */
+        .replace(minus, negativeSign) /* to recognize as negative sign and not an operator(minus) */
         .split('');
     forDisplay = splitNewInput;
     unFinishedTotal = [...forDisplay];
@@ -109,8 +110,8 @@ function addNegativeSign(negativeSign) {
     if (lastUsedOperator === 'none' || unFinishedTotalLastNumber.length === 0) {
         unFinishedTotal.unshift(negativeSign);
     } else {
-        unFinishedTotalLastNumber.unshift('(–');
-        unFinishedTotalLastNumber.push(')');
+        unFinishedTotalLastNumber.unshift(`${openParenthesis + negativeSign}`);
+        unFinishedTotalLastNumber.push(closeParenthesis);
     }
     forDisplay.unshift(negativeSign);
     return unFinishedTotalLastNumber;
@@ -140,37 +141,45 @@ function getPercentage(displayedNumber) {
     if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
         forDisplay = percentage
             .toString()
-            .replace(/[\-]/, '–')
+            .replace(minus, negativeSign)
             .split('');
-        unFinishedTotal = ['% of ', displayedNumber.toString().replace(/[\-]/, '–')];
-    } else if (unFinishedTotal.includes('%')) {
-        forDisplay = [...percentage.toString().replace(/[\-]/, '–')];
-        unFinishedTotal = ['% of ', displayedNumber];
+        unFinishedTotal = [`${percent} of `, displayedNumber.toString().replace(minus, negativeSign)];
+    } else if (unFinishedTotal.includes(percent)) {
+        forDisplay = [...percentage.toString().replace(minus, negativeSign)];
+        unFinishedTotal = [`${percent} of `, displayedNumber];
     } else {
         //get percentage with a number after an operator
         const previousSetBeforeLastOperator = unFinishedTotal.slice(0, lastUsedOperatorIndex);
         const previousSetTotal = getTotal(previousSetBeforeLastOperator);
-        if (percentage < 0) { percentage = `(${percentage})`; }
-        if (unFinishedTotalLastElement === ')') {
+        if (percentage < 0) { percentage = `${openParenthesis + percentage + closeParenthesis}`; }
+        if (unFinishedTotalLastElement === closeParenthesis) {
             unFinishedTotal.pop();
-            unFinishedTotal.push('%', ')');
+            unFinishedTotal.push(percent, closeParenthesis);
         } else {
-            unFinishedTotal.push('%');
+            unFinishedTotal.push(percent);
         }
 
         //percentage of currentDisplay multiplied by the previous set result,
         //then find the last operatorand to calculate the percentage from previous set.
+        
+        // let getPercentageFromPreviousSet = eval(`${percentage} * ${previousSetTotal}`);
+        // getPercentageFromPreviousSet = lastUsedOperator === addition ? previousSetTotal + getPercentageFromPreviousSet
+        // : lastUsedOperator === subtraction ? previousSetTotal - getPercentageFromPreviousSet
+        // : lastUsedOperator === division ? eval(`${previousSetTotal} / ${percentage}`)
+        // : getPercentageFromPreviousSet;
+
+
         let getPercentageFromPreviousSet = eval(`${percentage} * ${previousSetTotal}`);
-        if (lastUsedOperator === '+') {
+        if (lastUsedOperator === addition) {
             getPercentageFromPreviousSet = previousSetTotal + getPercentageFromPreviousSet;
-        } else if (lastUsedOperator === '-') {
+        } else if (lastUsedOperator === subtraction) {
             getPercentageFromPreviousSet = previousSetTotal - getPercentageFromPreviousSet;
-        } else if (lastUsedOperator === '/') {
+        } else if (lastUsedOperator === division) {
             getPercentageFromPreviousSet = eval(`${previousSetTotal} / ${percentage}`);
         }
         forDisplay = getPercentageFromPreviousSet
             .toString()
-            .replace('-', '–')
+            .replace(minus, negativeSign)
             .split('');
     }
 }
@@ -188,15 +197,15 @@ function getOverallTotal(overallTotal) {
     } else if (endsWithOperator === 'yes' || endsWithOperator === 'no') {
         currentTotal = overallTotal;
 
-        let newTotal = lastUsedOperator === '+' ? currentTotal + reservedLastNumber
-            : lastUsedOperator === '-' ? currentTotal - reservedLastNumber
-                : lastUsedOperator === '*' ? currentTotal * reservedLastNumber
+        let newTotal = lastUsedOperator === addition ? currentTotal + reservedLastNumber
+            : lastUsedOperator === subtraction ? currentTotal - reservedLastNumber
+                : lastUsedOperator === multiplication ? currentTotal * reservedLastNumber
                     : currentTotal / reservedLastNumber;
 
         unFinishedTotal = [newTotal];
         overallTotal = getTotal(unFinishedTotal);
 
-        const lastNumberWithNegativeSign = reservedLastNumber.toString().replace(/[\-]/, '–');
+        const lastNumberWithNegativeSign = reservedLastNumber.toString().replace(minus, negativeSign);
         unFinishedTotal = reservedLastNumber < 0
             ? [currentTotal.toString(), lastUsedOperator, '(', lastNumberWithNegativeSign, ')']
             : [currentTotal.toString(), lastUsedOperator, reservedLastNumber.toString()];
@@ -209,7 +218,7 @@ function getOverallTotal(overallTotal) {
         reservedLastNumber = eval(unFinishedTotal
             .slice(lastUsedOperatorIndex + 1)
             .join('')
-            .replace(/[\–]/, '-'));
+            .replace(negativeSign, minus));
         overallTotal = getTotal(unFinishedTotal)
         unFinishedTotal = [];
     }
@@ -235,13 +244,12 @@ function reset() {
 //CALCULATOR FUNCTION
 function calculator(event) {
     let pressedKey = event.key;
-    const [negativeSign, percent, equal] = ['–', '%', '='];
 
     if (clickEventis === 'on') { pressedKey = event; }
 
     //All numbers goes here including decimal
     if (number.test(pressedKey)) {
-        if (forDisplay.includes('.') && pressedKey === '.') { return; }
+        if (forDisplay.includes(decimal) && pressedKey === decimal) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('number'); }
         takeNumber(pressedKey);
         updateMainScreen(forDisplay);
@@ -255,7 +263,6 @@ function calculator(event) {
         if (operator.test(unFinishedTotalLastElement)) { unFinishedTotal.pop(); }
         if (lastUsedOperator.match(operator)) {
             forDisplay = [getTotal(unFinishedTotal)];
-
             updateMainScreen(forDisplay);
         }
         unFinishedTotal.push(pressedKey);
@@ -328,11 +335,11 @@ function deleteLastInput(withDeleteKey) {
         lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
         if (equalSignWasPressed || percentageSwitch === 'on') {
             forDisplay = onDisplay;
-        } else if (unFinishedTotal.slice(-1)[0] === ')') {
+        } else if (unFinishedTotal.slice(-1)[0] === closeParenthesis) {
             unFinishedTotal.splice(-2);
-            unFinishedTotal.push(')');
+            unFinishedTotal.push(closeParenthesis);
 
-            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+            if (forDisplay[ firstIndex ] === negativeSign && forDisplay.length === 1) {
                 unFinishedTotal.splice(lastUsedOperatorIndex + 1);
                 forDisplay = [];
             }
@@ -348,7 +355,7 @@ function deleteLastInput(withDeleteKey) {
 
         } else {
             unFinishedTotal.pop();
-            if (forDisplay[0] === '–' && forDisplay.length === 1) {
+            if (forDisplay[ firstIndex ] === negativeSign && forDisplay.length === 1) {
                 unFinishedTotal = [];
                 forDisplay = [];
             }
@@ -422,7 +429,7 @@ function getTotal(unFinishedTotalArray) {
 function useRegularMinusSign(whenNegativeIsPresent) {
     const combinedPressedKeys = whenNegativeIsPresent
         .join('')
-        .replace(/[\–]/g, '-');
+        .replace(/[\–]/g, minus);
     return combinedPressedKeys;
 }
 
@@ -496,16 +503,16 @@ function decreaseFontSize(inputLength) {
         toBeEqualledScreen.value = unFinishedTotal.join('');
     } else if (inputLength > 11) {
         let difference = inputLength - 11;
-        const breakPoint1 = 4;
-        const breakPoint2 = 7;
-        const breakPoint3 = 9;
-        for (let i = breakPoint1; i < difference; i++) {
+        
+        const [firstBreakpoint, secondBreakpoint, thirdBreakpoint] = [4, 7, 9];
+
+        for (let i = firstBreakpoint; i < difference; i++) {
             difference--;
         }
-        for (let j = breakPoint2; j < difference; j++) {
+        for (let j = secondBreakpoint; j < difference; j++) {
             difference--;
         }
-        for (let k = breakPoint3; k < difference; k++) {
+        for (let k = thirdBreakpoint; k < difference; k++) {
             difference -= 1;
         }
         const fontSizeReduction = difference * 3;
