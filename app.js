@@ -265,6 +265,7 @@ function calculator(event) {
     } else if (pressedKey === negativeSign) {
         unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
         const operatorCount = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
+        if (forDisplay.length === 0) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('negativeSign') };
 
         //if current number on main screen is a total number from previous operation,
