@@ -215,6 +215,21 @@ function getOverallTotal(overallTotal) {
     }
     return overallTotal;
 }
+
+//CANCEL OR RESET
+function reset() {
+    unFinishedTotal = [];
+    lastUsedOperator = 'none';
+    forDisplay = [];
+    percentageSwitch = 'off';
+    endsWithOperator = '';
+    reservedLastNumber = '';
+    currentTotal = '';
+    equalSignWasPressed = false;
+    calculatorScreen.value = '0';
+    a[0].style.opacity = '1';
+    a[1].style.position = 'static';
+}
 //NEW
 
 //CALCULATOR FUNCTION
@@ -282,17 +297,7 @@ function calculator(event) {
         forDisplay = newOverallTotal;
         updateMainScreen(newOverallTotal);
     } else if (pressedKey === 'c' || pressedKey === 'C') {
-        unFinishedTotal = [];
-        lastUsedOperator = 'none';
-        forDisplay = [];
-        percentageSwitch = 'off';
-        endsWithOperator = '';
-        reservedLastNumber = '';
-        currentTotal = '';
-        equalSignWasPressed = false;
-        calculatorScreen.value = '0';
-        a[0].style.opacity = '1';
-        a[1].style.position = 'static';
+        reset();
     } else if (pressedKey === 'Backspace') {
         deleteLastInput(pressedKey);
         if (forDisplay.length === 0) {
