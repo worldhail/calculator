@@ -300,7 +300,8 @@ function calculator(event) {
     } else if (pressedKey === equal || pressedKey === 'Enter') {
         equalSignWasPressed = true;
         const newOverallTotal = getOverallTotal(forDisplay
-            .join('') * 1)
+            .join('')
+            .replace(negativeSign, minus) * 1)
             .toString()
             .split('');
         forDisplay = newOverallTotal;
