@@ -16,7 +16,7 @@ window.addEventListener('keyup', (event) => {
     const cannotPrevented = 'CapsLock';
     if (event.key === cannotPrevented) {
         return;
-    } else if (allowedKeys.test(event.key)) {
+    } else if (event.key.match(allowedKeys)) {
         calculator(event);
     }
 });
@@ -63,7 +63,6 @@ function switchOffVariables(inputType) {
 function takeNumber(input) {
     lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
     if (operator.test(lastElementOfUnfinishTotal)) { forDisplay = []; }
-
     if (input === decimal && forDisplay.length === 0) {
         forDisplay.push(0);
         unFinishedTotal.push(0);
@@ -243,7 +242,7 @@ function calculator(event) {
     if (clickEventis === 'on') { pressedKey = event; }
 
     //All numbers goes here including decimal
-    if (number.test(pressedKey)) {
+    if (pressedKey.match(number)) {
         if (forDisplay.includes(decimal) && pressedKey === decimal) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('number'); }
         takeNumber(pressedKey);
@@ -251,10 +250,12 @@ function calculator(event) {
         hideLetter(a);
 
         //operator keys will run inside this condition
-    } else if (operator.test(pressedKey)) {
-        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
+    } else if (pressedKey.match(operator)) {
+        // lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
         if (forDisplay.length === 0) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('operator'); }
+        
+        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
         if (lastElementOfUnfinishTotal.match(operator)) { unFinishedTotal.pop(); }
         else if (lastUsedOperator.match(operator)) {
             forDisplay = [getTotal(unFinishedTotal)];
@@ -265,14 +266,14 @@ function calculator(event) {
 
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === negativeSign) {
-        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
         const operatorCount = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
         if (forDisplay.length === 0) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('negativeSign') };
 
         //if current number on main screen is a total number from previous operation,
         //then it will be a new input if negative sign is removed/applied.
-        if (operator.test(lastElementOfUnfinishTotal) && operatorCount > 1) {
+        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
+        if (lastElementOfUnfinishTotal.match(operator) && operatorCount > 1) {
             makePreviousTotalAsNewInput(forDisplay);
         }
 
