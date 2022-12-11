@@ -298,7 +298,7 @@ function calculator(event) {
         equalSignWasPressed = true;
         const newOverallTotal = getOverallTotal(forDisplay
             .join('')
-            .replace(negativeSign, minus) * 1)
+            .replaceAll(negativeSign, minus) * 1)
             .toString()
             .split('');
         forDisplay = newOverallTotal;
@@ -399,7 +399,7 @@ function updateMainScreen(inputs) {
 
 // DISPLAY FUNCTION FOR SMALL SCREEN WHICH TO BE TOTALLED
 function updateSubScreen(array) {
-    const operatorOutput = { '+': ' ＋ ', '–': '-', '*': ' × ', '/': ' ÷ ', '-': ' ﹣ ' };
+    const operatorOutput = { '+': '＋', '–': '-', '*': ' × ', '/': ' ÷ ', '-': '﹣' };
     const pressedKeys = array
         .join('')
         .replace(/[\–]|[\*]|[\/]|[\+]|[\-]/g, (values) => {
