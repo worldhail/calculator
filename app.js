@@ -6,7 +6,7 @@ const number = /[\d]|[\.]/;
 let unFinishedTotal = [], forDisplay = [];
 let lastUsedOperator = 'none', percentageSwitch = 'off', endsWithOperator = '', reservedLastNumber = '';
 let currentTotal = '', equalSignWasPressed = false, clickEventis = 'off', firstIndex = 0;
-let lastUsedOperatorIndex, mainScreenLength, changedNegativeSign, unFinishedTotalLastElement;
+let lastUsedOperatorIndex, mainScreenLength, changedNegativeSign, lastElementOfUnfinishTotal;
 const [negativeSign, percent, equal, decimal, openParenthesis, closeParenthesis, minus] = ['–', '%', '=', '.', '(', ')', '-'];
 const [addition, subtraction, multiplication, division] = ['+', '-', '*', '/'];
 
@@ -31,7 +31,7 @@ function switchOffVariables(inputType) {
         equalSignWasPressed = false;
         percentageSwitch = 'off';
         unFinishedTotal = [];
-        unFinishedTotalLastElement = '';
+        lastElementOfUnfinishTotal = '';
     } else if (inputType === 'operator') {
         if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
@@ -61,8 +61,8 @@ function switchOffVariables(inputType) {
 
 //TAKE NUMBER FUNCTION
 function takeNumber(input) {
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    if (operator.test(unFinishedTotalLastElement)) { forDisplay = []; }
+    lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
+    if (operator.test(lastElementOfUnfinishTotal)) { forDisplay = []; }
 
     if (input === decimal && forDisplay.length === 0) {
         forDisplay.push(0);
@@ -72,7 +72,7 @@ function takeNumber(input) {
             forDisplay.pop();
             unFinishedTotal.pop();
         }
-    } else if (unFinishedTotalLastElement === closeParenthesis) {
+    } else if (lastElementOfUnfinishTotal === closeParenthesis) {
         unFinishedTotal.pop();
         unFinishedTotal.push(input, closeParenthesis);
         forDisplay.push(input);
@@ -124,11 +124,11 @@ function removeNegativeSign() {
 //GET PERCENTAGE FUNCTION
 function getPercentage(displayedNumber) {
     lastUsedOperatorIndex = getLastUsedOperatorIndex(unFinishedTotal);
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+    lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
     let percentage = displayedNumber / 100;
 
     //if the array unFinishedTotal last element is an operator or doesn't have any operator
-    if (operator.test(unFinishedTotalLastElement) || !operator.test(unFinishedTotal)) {
+    if (operator.test(lastElementOfUnfinishTotal) || !operator.test(unFinishedTotal)) {
         forDisplay = percentage
             .toString()
             .replace(minus, negativeSign)
@@ -142,7 +142,7 @@ function getPercentage(displayedNumber) {
         const previousSetBeforeLastOperator = unFinishedTotal.slice(0, lastUsedOperatorIndex);
         const previousSetTotal = getTotal(previousSetBeforeLastOperator);
         if (percentage < 0) { percentage = `${openParenthesis + percentage + closeParenthesis}`; }
-        if (unFinishedTotalLastElement === closeParenthesis) {
+        if (lastElementOfUnfinishTotal === closeParenthesis) {
             unFinishedTotal.pop();
             unFinishedTotal.push(percent, closeParenthesis);
         } else {
@@ -176,9 +176,9 @@ function getPercentage(displayedNumber) {
 
 //GET OVERALL TOTAL FUNCTION
 function getOverallTotal(overallTotal) {
-    //avoiding unFinishedTotalLastElement not to return true when it's value is like '2.5425123512e+13'(considered as last element)
-    unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
-    if (operator.test(unFinishedTotalLastElement) && !unFinishedTotalLastElement.includes('e')) {
+    //avoiding lastElementOfUnfinishTotal not to return true when it's value is like '2.5425123512e+13'(considered as last element)
+    lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
+    if (operator.test(lastElementOfUnfinishTotal) && !lastElementOfUnfinishTotal.includes('e')) {
         unFinishedTotal.pop();
         endsWithOperator = 'yes';
         reservedLastNumber = overallTotal;
@@ -229,6 +229,11 @@ function reset() {
     a[0].style.opacity = '1';
     a[1].style.position = 'static';
 }
+
+//GET LAST ELEMENT OF AN ARRAY FUNCTION
+function lastElementOf(array) {
+    return array.slice(-1)[0];
+}
 //NEW
 
 //CALCULATOR FUNCTION
@@ -247,11 +252,11 @@ function calculator(event) {
 
         //operator keys will run inside this condition
     } else if (operator.test(pressedKey)) {
-        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
         if (forDisplay.length === 0) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('operator'); }
-        if (operator.test(unFinishedTotalLastElement)) { unFinishedTotal.pop(); }
-        if (lastUsedOperator.match(operator)) {
+        if (lastElementOfUnfinishTotal.match(operator)) { unFinishedTotal.pop(); }
+        else if (lastUsedOperator.match(operator)) {
             forDisplay = [getTotal(unFinishedTotal)];
             updateMainScreen(forDisplay);
         }
@@ -260,14 +265,14 @@ function calculator(event) {
 
         //for numbers that needed a negative sign (alt-minus)
     } else if (pressedKey === negativeSign) {
-        unFinishedTotalLastElement = unFinishedTotal.slice(-1)[0];
+        lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
         const operatorCount = unFinishedTotal.filter(usedOperator => operator.test(usedOperator)).length;
         if (forDisplay.length === 0) { return; }
         if (equalSignWasPressed || percentageSwitch === 'on') { switchOffVariables('negativeSign') };
 
         //if current number on main screen is a total number from previous operation,
         //then it will be a new input if negative sign is removed/applied.
-        if (operator.test(unFinishedTotalLastElement) && operatorCount > 1) {
+        if (operator.test(lastElementOfUnfinishTotal) && operatorCount > 1) {
             makePreviousTotalAsNewInput(forDisplay);
         }
 
