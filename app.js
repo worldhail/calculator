@@ -51,7 +51,8 @@ function switchOffVariables(inputType) {
             lastUsedOperator = 'none';
             endsWithOperator = '';
             equalSignWasPressed = false;
-        } else if (percentageSwitch === 'on') {
+        }
+        if (percentageSwitch === 'on') {
             percentageSwitch = 'off';
             lastUsedOperator = 'none';
             unFinishedTotal = [...forDisplay];
