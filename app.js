@@ -383,8 +383,7 @@ for (let i = 0; i < 20; i++) {
                 break;
             case 'Del':
                 target = 'Backspace';
-                deleteLastInput(target);
-                return;
+                break;
         };
         clickEventis = 'on';
         calculator(target);
