@@ -13,8 +13,8 @@ const [addition, subtraction, multiplication, division] = ['+', '-', '*', '/'];
 //KEYUP EVENT FUNCTION
 window.addEventListener('keyup', (event) => {
     const allowedKeys = new RegExp(operator.source + '|[\\d]|[\\.]|[=]|[%]|Enter|[\\–]|[cC]|Backspace');
-    const cannotPrevented = 'CapsLock';
-    if (event.key === cannotPrevented) {
+    const cannotPrevented = ['CapsLock', 'Control'];
+    if (cannotPrevented.includes(event.key)) {
         return;
     } else if (event.key.match(allowedKeys)) {
         calculator(event);
