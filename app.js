@@ -301,8 +301,9 @@ function calculator(event) {
             .replaceAll(negativeSign, minus) * 1)
             .toString()
             .split('');
-        forDisplay = newOverallTotal;
-        updateMainScreen(newOverallTotal);
+        
+        forDisplay = isNaN(newOverallTotal.join('')) ? ['Not a number'] : newOverallTotal;
+        updateMainScreen(forDisplay);
     } else if (pressedKey === 'c' || pressedKey === 'C') {
         reset();
     } else if (pressedKey === 'Backspace') {
