@@ -178,7 +178,10 @@ function getPercentage(displayedNumber) {
 function getOverallTotal(overallTotal) {
     //avoiding lastElementOfUnfinishTotal not to return true when it's value is like '2.5425123512e+13'(considered as last element)
     lastElementOfUnfinishTotal = unFinishedTotal.slice(-1)[0];
-    if (operator.test(lastElementOfUnfinishTotal) && !lastElementOfUnfinishTotal.includes('e')) {
+    if (isNaN(overallTotal)) {
+        unFinishedTotal = [];
+        return NaN;
+    } else if (operator.test(lastElementOfUnfinishTotal) && !lastElementOfUnfinishTotal.includes('e')) {
         unFinishedTotal.pop();
         endsWithOperator = 'yes';
         reservedLastNumber = overallTotal;
